@@ -1,10 +1,10 @@
 from Functions import *
 import time
 import random
-<<<<<<< Updated upstream
 import pygame
+
 pygame.init()
-screen = pygame.display.set_mode((1280, 660))
+screen = pygame.display.set_mode((1024, 1024))
 running = True
 while running:
     for event in pygame.event.get():
@@ -13,7 +13,5 @@ while running:
 pygame.quit()
 print("hello")
 Hello()
-=======
 
-__init()
->>>>>>> Stashed changes
+
