@@ -1,6 +1,7 @@
 from Functions import *
 import time
 import random
+<<<<<<< Updated upstream
 import pygame
 pygame.init()
 screen = pygame.display.set_mode((1280, 660))
@@ -12,3 +13,7 @@ while running:
 pygame.quit()
 print("hello")
 Hello()
+=======
+
+__init()
+>>>>>>> Stashed changes
