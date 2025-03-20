@@ -5,7 +5,9 @@ from images import *
 
 #config
 pygame.init()
-screen = pygame.display.set_mode((900, 600))
+infoObject = pygame.display.Info()
+screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
+#screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hells_Kitchen')
 running = True
 bg = pygame.image.load("images/bg.png")
@@ -13,6 +15,7 @@ start_game = False
 gameOver = False
 font = pygame.font.SysFont('Arial', 40)
 objects = []
+
 
 
 #game loop
