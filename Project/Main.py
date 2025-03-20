@@ -5,16 +5,17 @@ from images import *
 
 #config
 pygame.init()
-infoObject = pygame.display.Info()
-screen = pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
-#screen = pygame.display.set_mode((900, 600))
+
+screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hells_Kitchen')
-running = True
 bg = pygame.image.load("images/bg.png")
 start_game = False
 gameOver = False
+running = True
+
+start_button_color = (255,255,255)
 font = pygame.font.SysFont('Arial', 40)
-objects = []
+start_button_text = font.render("START", True, start_button_color)
 
 
 
@@ -25,6 +26,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
     while start_game: #once start button is pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
