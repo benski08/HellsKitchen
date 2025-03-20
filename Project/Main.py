@@ -38,10 +38,14 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if button_rect.collidepoint(event.pos):
+                start_game = True
 
     while start_game: #once start button is pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                start_game = False
                 running = False
         pygame.display.update()
 
