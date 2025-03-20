@@ -16,31 +16,57 @@ running = True
 
 GRAY = (180,180,180)
 BLACK = (0,0,0)
-
-
-font = pygame.font.SysFont('Arial', 40)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
-
-button_width, button_height = 200, 80
-button_x, button_y = (WIDTH - button_width) // 2, (HEIGHT - button_height) // 2 + 200
-button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+#Menubutton
+menu_font = pygame.font.SysFont('Arial', 40)
+menu_button_width, menu_button_height = 200, 80
+menu_button_x, menu_button_y = (WIDTH - menu_button_width) // 2, (HEIGHT - menu_button_height) // 2 + 200
+button_rect = pygame.Rect(menu_button_x, menu_button_y, menu_button_width, menu_button_height)
+text_surface = menu_font.render("START", True, BLACK)
+text_rect = text_surface.get_rect(center=button_rect.center)
 
 #keystroke definitions
-global key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l" ]
-global used_list = []
+key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
+used_list = ["K_a","K_a","K_a"]
+def randomKey(previous_letter):
+    n=0
+    for item in used_list:
+        if item == previous_letter:
+            used_list.pop(n)
+            n += 1
+    index = random.randint(0,25)
+    key = key_list[index]
+    used_list.append(key)
+    return key
 
-cooking_pot_key = randomKey()
-tea_pot_key = randomKey()
-trash_can_key = randomKey()
+cooking_pot_key = randomKey("K_a")
+tea_pot_key = randomKey("K_a")
+trash_can_key = randomKey("K_a")
+print(cooking_pot_key, tea_pot_key, trash_can_key)
+print(used_list)
 
+#controlsinfo buttons
+info_font = pygame.font.SysFont("Arial", 30, bold=True)
+info_button_width, info_button_height = 40, 40
+
+#cooking pot button
+CP_info_surface = info_font.render(cooking_pot_key[2], True, (255, 255, 255))
+CP_info_button_x, CP_info_button_y = (WIDTH - info_button_width) // 2 + 400, (HEIGHT - info_button_height) // 2 + 250
+CP_button_rect = pygame.Rect(CP_info_button_x, CP_info_button_y, info_button_width, info_button_height)
+CP_text_rect = CP_info_surface.get_rect(center=CP_button_rect.center)
+
+#tea pot button
+TP_info_surface = info_font.render(tea_pot_key[2], True, (255, 255, 255))
+TP_info_button_x, TP_info_button_y = (WIDTH - info_button_width) // 2 + 320, (HEIGHT - info_button_height) // 2 + 250
+TP_button_rect = pygame.Rect(TP_info_button_x, TP_info_button_y, info_button_width, info_button_height)
+TP_text_rect = TP_info_surface.get_rect(center=TP_button_rect.center)
 
 #game loop
 while running:
     screen.blit(title_bg, (0, 0))
     pygame.draw.rect(screen, GRAY, button_rect)
-    text_surface = font.render("START", True, BLACK)
-    text_rect = text_surface.get_rect(center=button_rect.center)
+
     screen.blit(text_surface, text_rect)
     pygame.display.update()
 
@@ -48,20 +74,27 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-
             if button_rect.collidepoint(event.pos):
-                screen.blit(game_bg, (0,0))
+                #game start
+                screen.blit(game_bg, (0, 0))
                 start_game = True
 
-
     while start_game: #once start button is pressed
+        #render buttons
+        pygame.draw.rect(screen, BLACK, CP_button_rect)
+        screen.blit(CP_info_surface, CP_text_rect)
+        pygame.draw.rect(screen, BLACK, TP_button_rect)
+        screen.blit(TP_info_surface,TP_text_rect)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.
-
+                if event.key == getattr(pygame, cooking_pot_key):
+                    print("Cooking pot")
+                    cooking_pot_interact()
+                elif event.key == getattr(pygame, tea_pot_key):
+                    print("Tea pot")
         pygame.display.update()
 
 pygame.quit()
