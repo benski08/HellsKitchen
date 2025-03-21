@@ -1,4 +1,6 @@
 #imports
+from pygame import MOUSEBUTTONDOWN
+
 from Functions import *
 import time, random, sys, pygame
 from images import *
@@ -40,8 +42,32 @@ used_list = ["K_a","K_a","K_a"]
 #controlsinfo buttons
 info_font = pygame.font.SysFont("Arial", 30, bold=True)
 info_button_width, info_button_height = 40, 40
+
+# Play Again Button
+play_again_font = pygame.font.SysFont('Arial', 40)
+pa_button_width, pa_button_height = 200, 80
+pa_button_x, pa_button_y = (WIDTH - pa_button_width) // 2, (HEIGHT - pa_button_height) // 2 - 200
+play_again_rect = pygame.Rect(pa_button_x, pa_button_y, pa_button_width, pa_button_height)
+pa_text_surface = play_again_font.render("PLAY AGAIN?", True, BLACK)
+pa_text_rect = text_surface.get_rect(center=button_rect.center)
+
 def gameOver():
+    gameOver = True
+    start_game = False
+    #render play again button
+    while gameOver == True:
+        screen.blit(title_bg, (0, 0))
+        pygame.draw.rect(screen, GRAY, play_again_rect)
+        screen.blit(pa_text_surface, pa_text_rect)
+        pygame.display.update()
+        if event.type == pygame.QUIT:
+            running = False
+            break
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if play_again_rect.collidepoint(event.pos):
+                gameOver = False
     return
+
 def randomKey(previous_letter):
     n = 0
     for item in used_list:
@@ -142,5 +168,6 @@ while running:
                     print("Tea pot")
         pygame.display.update()
         clock.tick()
+    ...
 
 pygame.quit()
