@@ -8,9 +8,11 @@ pygame.init()
 
 screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hells_Kitchen')
-title_bg = pygame.image.load("images/title_bg.jpg")
-game_bg = pygame.image.load("images/game_bg.png")
-cookingpot = pygame.image.load("images/cookingpot.jpg")
+title_bg = pygame.image.load("images/title_bg.jpg").convert()
+game_bg = pygame.image.load("images/game_bg.png").convert()
+cookingpot = pygame.image.load("images/cookingpot.jpg").convert()
+game_icon = pygame.image.load("images/gordon.png").convert_alpha()
+pygame.display.set_icon(game_icon)
 start_game = False
 gameOver = False
 running = True
