@@ -5,8 +5,6 @@ def Hello():
 def gameStart():
     screen.blit(game_bg, (0, 0))
     return
-def gameOver():
-    return
 def game_to_menu():
     return
 def cooking_pot_interact():

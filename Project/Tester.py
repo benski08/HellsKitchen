@@ -23,6 +23,8 @@ GREEN = (0, 255, 0)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 
+clock = pygame.time.Clock()
+
 #Menubutton
 menu_font = pygame.font.SysFont('Arial', 40)
 menu_button_width, menu_button_height = 200, 80
@@ -35,7 +37,11 @@ text_rect = text_surface.get_rect(center=button_rect.center)
 key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
 used_list = ["K_a","K_a","K_a"]
 
-
+#controlsinfo buttons
+info_font = pygame.font.SysFont("Arial", 30, bold=True)
+info_button_width, info_button_height = 40, 40
+def gameOver():
+    return
 def randomKey(previous_letter):
     n = 0
     for item in used_list:
@@ -54,34 +60,41 @@ class Task:
         self.progress = progress
         self.key = key
         return
+
     def pBarUpdate(self):
         self.MAXWIDTH = 80
         self.HEIGHT = 20
         self.WIDTH = self.MAXWIDTH/100 * self.progress
-        self.p_bar_rect = pygame.Rect(self.x,self.y, self.WIDTH, self.HEIGHT)
-        pygame.draw.rect(screen, GREEN, self.p_bar_rect)
-        self.progress += 5
-        time.sleep(1)
+        self.XDISPLACEMENT = self.WIDTH/2
+        self.p_bar_rect = pygame.Rect(self.x - self.XDISPLACEMENT,self.y, self.WIDTH, self.HEIGHT)
+        self.COLOR = (self.progress/100 * 255, (1-self.progress/100)*255,0)
+        pygame.draw.rect(screen, self.COLOR, self.p_bar_rect)
+        print(self.COLOR)
+        self.progress += 0.01
+        return self.progress
+
+    def controlInfo(self,surface, x, y, side_length):
+        self.surface = surface
+        self.side_length = side_length
+        self.x = x
+        self.y = y
+        self.cI_rect = pygame.Rect(x, y, side_length, side_length)
+        self.text_rect = surface.get_rect(center=self.cI_rect.center)
+        pygame.draw.rect(screen, BLACK, self.cI_rect)
+        screen.blit(CP_info_surface, self.text_rect)
     pass
 
-cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 50) // 2
+cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
 cooking_pot = Task(cooking_pot_x, cooking_pot_y, 0, randomKey("K_a"))
 tea_pot_key = randomKey("K_a")
 trash_can_key = randomKey("K_a")
+plates_key = randomKey("K_a")
 print(cooking_pot.key, used_list)
 
-#controlsinfo buttons
-info_font = pygame.font.SysFont("Arial", 30, bold=True)
-info_button_width, info_button_height = 40, 40
 
 #cooking pot button
 CP_info_surface = info_font.render(cooking_pot.key[2], True, (255, 255, 255))
 CP_info_button_x, CP_info_button_y = (WIDTH - info_button_width) // 2 + 400, (HEIGHT - info_button_height) // 2 + 250
-CP_button_rect = pygame.Rect(CP_info_button_x, CP_info_button_y, info_button_width, info_button_height)
-CP_text_rect = CP_info_surface.get_rect(center=CP_button_rect.center)
-
-
-#cooking pot progress bar
 
 
 #tea pot button
@@ -97,7 +110,6 @@ while running:
 
     screen.blit(text_surface, text_rect)
     pygame.display.update()
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -109,12 +121,15 @@ while running:
 
     while start_game: #once start button is pressed
         #render buttons
-        pygame.draw.rect(screen, BLACK, CP_button_rect)
-        screen.blit(CP_info_surface, CP_text_rect)
+        Task.controlInfo(cooking_pot, CP_info_surface, CP_info_button_x, CP_info_button_y, 40)
         pygame.draw.rect(screen, BLACK, TP_button_rect)
         screen.blit(TP_info_surface,TP_text_rect)
         screen.blit(cookingpot, (450, 300))
-        cooking_pot.pBarUpdate()
+        if cooking_pot.pBarUpdate() >= 100:
+            gameOver()
+        else:
+            cooking_pot.pBarUpdate()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
@@ -126,5 +141,6 @@ while running:
                 elif event.key == getattr(pygame, tea_pot_key):
                     print("Tea pot")
         pygame.display.update()
+        clock.tick()
 
 pygame.quit()
