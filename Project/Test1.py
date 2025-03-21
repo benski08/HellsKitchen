@@ -44,29 +44,34 @@ info_font = pygame.font.SysFont("Arial", 30, bold=True)
 info_button_width, info_button_height = 40, 40
 
 # Play Again Button
-play_again_font = pygame.font.SysFont('Arial', 40)
+play_again_font = pygame.font.SysFont('Arial', 35)
 pa_button_width, pa_button_height = 200, 80
 pa_button_x, pa_button_y = (WIDTH - pa_button_width) // 2, (HEIGHT - pa_button_height) // 2 - 200
 play_again_rect = pygame.Rect(pa_button_x, pa_button_y, pa_button_width, pa_button_height)
 pa_text_surface = play_again_font.render("PLAY AGAIN?", True, BLACK)
-pa_text_rect = text_surface.get_rect(center=button_rect.center)
+pa_text_rect = pa_text_surface.get_rect(center=play_again_rect.center)
 
 def gameOver():
+    global running  # Allows modifying 'running' inside this function
     gameOver = True
-    start_game = False
-    #render play again button
-    while gameOver == True:
-        screen.blit(title_bg, (0, 0))
-        pygame.draw.rect(screen, GRAY, play_again_rect)
-        screen.blit(pa_text_surface, pa_text_rect)
+    start_game = False  # Stops the game
+
+    while gameOver:
+        screen.blit(title_bg, (0, 0))  # Render background
+        pygame.draw.rect(screen, GRAY, play_again_rect)  # Draw play again button
+        screen.blit(pa_text_surface, pa_text_rect)  # Render text
         pygame.display.update()
-        if event.type == pygame.QUIT:
-            running = False
-            break
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if play_again_rect.collidepoint(event.pos):
-                gameOver = False
-    return
+
+        for event in pygame.event.get():  # ✅ Correct event handling
+            if event.type == pygame.QUIT:
+                running = False  # ✅ Properly stop the game
+                return  # Exit function immediately
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if play_again_rect.collidepoint(event.pos):
+                    gameOver = False  # ✅ Exit loop to return to main game
+
+    return  # Ensures function exits correctly
 
 def randomKey(previous_letter):
     n = 0
@@ -151,10 +156,6 @@ while running:
         pygame.draw.rect(screen, BLACK, TP_button_rect)
         screen.blit(TP_info_surface,TP_text_rect)
         screen.blit(cookingpot, (450, 300))
-        if cooking_pot.pBarUpdate() >= 100:
-            gameOver()
-        else:
-            cooking_pot.pBarUpdate()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -168,6 +169,10 @@ while running:
                     print("Tea pot")
         pygame.display.update()
         clock.tick()
+        if cooking_pot.pBarUpdate() >= 100:
+            gameOver()
+        else:
+            cooking_pot.pBarUpdate()
     ...
 
 pygame.quit()
