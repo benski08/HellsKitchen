@@ -13,6 +13,7 @@ title_bg = pygame.image.load("images/title_bg.jpg").convert()
 game_bg = pygame.image.load("images/game_bg.png").convert()
 cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").convert_alpha()
 cookingpot_lid_left = pygame.image.load("images/cookingpot_lid_left.png").convert_alpha()
+plate = pygame.image.load("images/plate.png").convert_alpha()
 game_icon = pygame.image.load("images/gordon.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 
@@ -95,8 +96,6 @@ class Task:
         self.y = y
         self.progress = progress
         self.key = key
-        self.toggle_lid = False
-
         return
 
     def pBarUpdate(self):
@@ -122,13 +121,23 @@ class Task:
         screen.blit(CP_info_surface, self.text_rect)
     pass
 class CookingPot(Task):
-    def __init__(self):
+    def __init__(self, x, y, progress, key):
         super().__init__(x, y, progress, key)
+        self.toggle_lid = True
+        self.frame_counter = 0
     def animate(self):
+        self.min_frames = 5 #in frames
+        self.max_frames = 30 #in frames
+        self.switch_rate = int(self.max_frames - (self.progress / 100) * (self.max_frames - self.min_frames)) #calculate switchrate based on progress
+        print(self.switch_rate)
+        if self.frame_counter == self.switch_rate: #if the framecounter is high enough, it will switch states of lid
+            self.toggle_lid = not self.toggle_lid
+            self.frame_counter = 0
         if self.toggle_lid == True:
             screen.blit(cookingpot_lid_right, ((WIDTH - 50) // 2 + 182, (HEIGHT - 50) // 2 - 12))
         else:
             screen.blit(cookingpot_lid_left, ((WIDTH - 50) // 2 + 182, (HEIGHT - 50) // 2 - 12))
+        self.frame_counter += 1
 
 
 
@@ -168,7 +177,7 @@ while running:
     while start_game: #once start button is pressed
         #render buttons
         CookingPot.controlInfo(Cooking_pot, CP_info_surface, CP_info_button_x, CP_info_button_y, 40)
-
+        screen.blit(plate, ((WIDTH - info_button_width) // 2 + 320, (HEIGHT - info_button_height) // 2 + 250))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
