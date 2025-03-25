@@ -3,7 +3,6 @@ from pygame import MOUSEBUTTONDOWN
 
 from Functions import *
 import time, random, sys, pygame
-from images import *
 
 #config
 pygame.init()
@@ -12,7 +11,8 @@ screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hells_Kitchen')
 title_bg = pygame.image.load("images/title_bg.jpg").convert()
 game_bg = pygame.image.load("images/game_bg.png").convert()
-cookingpot = pygame.image.load("images/cookingpot.jpg").convert()
+cookingpot_sprite = pygame.image.load("images/cookingpot.jpg").convert_alpha()
+cookingpot_lid_sprite = pygame.image.load("images/cookingpot_lid.jpg").convert_alpha()
 game_icon = pygame.image.load("images/gordon.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 start_game = False
@@ -24,6 +24,7 @@ BLACK = (0,0,0)
 GREEN = (0, 255, 0)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
+FRAMERATE = 30
 
 clock = pygame.time.Clock()
 
@@ -57,7 +58,7 @@ def gameOver():
     gameOver = True
     start_game = False
     #render play again button
-    cooking_pot.progress = 0
+    Cooking_pot.progress = 0
     while gameOver == True:
         screen.blit(title_bg, (0, 0))
         pygame.draw.rect(screen, GRAY, play_again_rect)
@@ -96,6 +97,7 @@ class Task:
         return
 
     def pBarUpdate(self):
+        self.MAXTIME = 5
         self.MAXWIDTH = 80
         self.HEIGHT = 20
         self.WIDTH = self.MAXWIDTH/100 * self.progress
@@ -103,8 +105,7 @@ class Task:
         self.p_bar_rect = pygame.Rect(self.x - self.XDISPLACEMENT,self.y, self.WIDTH, self.HEIGHT)
         self.COLOR = (self.progress/100 * 255, (1-self.progress/100)*255,0)
         pygame.draw.rect(screen, self.COLOR, self.p_bar_rect)
-        print(self.COLOR)
-        self.progress += 0.01
+        self.progress += 100/(self.MAXTIME*30)
         return self.progress
 
     def controlInfo(self,surface, x, y, side_length):
@@ -117,25 +118,37 @@ class Task:
         pygame.draw.rect(screen, BLACK, self.cI_rect)
         screen.blit(CP_info_surface, self.text_rect)
     pass
+class CookingPot(Task):
+
+    def animate(self):
+        screen.blit(cookingpot_sprite, ((WIDTH - 50) // 2,(HEIGHT - 50) // 2))
+
+
+        """self.oscillationspeed = int(1/(self.progress*(FRAMERATE/100)))
+        self.n = 0
+        if self.n == self.oscillationspeed:
+            cookingpot_sprite = pygame.transform.rotate(cookingpot_sprite, -5)
+            self.n = 0
+        else:
+            self.n += 1"""
 
 cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
-cooking_pot = Task(cooking_pot_x, cooking_pot_y, 0, randomKey("K_a"))
+Cooking_pot = CookingPot(cooking_pot_x, cooking_pot_y, 0, randomKey("K_a"))
 tea_pot_key = randomKey("K_a")
 trash_can_key = randomKey("K_a")
 plates_key = randomKey("K_a")
-print(cooking_pot.key, used_list)
+print(Cooking_pot.key, used_list)
 
 
 #cooking pot button
-CP_info_surface = info_font.render(cooking_pot.key[2], True, (255, 255, 255))
+CP_info_surface = info_font.render(Cooking_pot.key[2], True, (255, 255, 255))
 CP_info_button_x, CP_info_button_y = (WIDTH - info_button_width) // 2 + 400, (HEIGHT - info_button_height) // 2 + 250
 
 
 #tea pot button
 TP_info_surface = info_font.render(tea_pot_key[2], True, (255, 255, 255))
 TP_info_button_x, TP_info_button_y = (WIDTH - info_button_width) // 2 + 320, (HEIGHT - info_button_height) // 2 + 250
-TP_button_rect = pygame.Rect(TP_info_button_x, TP_info_button_y, info_button_width, info_button_height)
-TP_text_rect = TP_info_surface.get_rect(center=TP_button_rect.center)
+
 
 #game loop
 while running:
@@ -154,26 +167,24 @@ while running:
 
     while start_game: #once start button is pressed
         #render buttons
-        Task.controlInfo(cooking_pot, CP_info_surface, CP_info_button_x, CP_info_button_y, 40)
-        pygame.draw.rect(screen, BLACK, TP_button_rect)
-        screen.blit(TP_info_surface,TP_text_rect)
+        CookingPot.controlInfo(Cooking_pot, CP_info_surface, CP_info_button_x, CP_info_button_y, 40)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == getattr(pygame, cooking_pot.key):
+                if event.key == getattr(pygame, Cooking_pot.key):
                     print("Cooking pot")
                     cooking_pot_interact()
                 elif event.key == getattr(pygame, tea_pot_key):
                     print("Tea pot")
-        if cooking_pot.pBarUpdate() >= 100:
+        if Cooking_pot.progress >= 100:
             gameOver()
         else:
-            cooking_pot.pBarUpdate()
+            Cooking_pot.pBarUpdate()
+            Cooking_pot.animate()
         pygame.display.update()
-        clock.tick()
-    ...
+        clock.tick(FRAMERATE)
 
 pygame.quit()
