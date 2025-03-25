@@ -11,10 +11,11 @@ screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hells_Kitchen')
 title_bg = pygame.image.load("images/title_bg.jpg").convert()
 game_bg = pygame.image.load("images/game_bg.png").convert()
-cookingpot_sprite = pygame.image.load("images/cookingpot.jpg").convert_alpha()
-cookingpot_lid_sprite = pygame.image.load("images/cookingpot_lid.jpg").convert_alpha()
+cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").convert_alpha()
+cookingpot_lid_left = pygame.image.load("images/cookingpot_lid_left.png").convert_alpha()
 game_icon = pygame.image.load("images/gordon.png").convert_alpha()
 pygame.display.set_icon(game_icon)
+
 start_game = False
 gameOver = False
 running = True
@@ -94,6 +95,8 @@ class Task:
         self.y = y
         self.progress = progress
         self.key = key
+        self.toggle_lid = False
+
         return
 
     def pBarUpdate(self):
@@ -119,18 +122,15 @@ class Task:
         screen.blit(CP_info_surface, self.text_rect)
     pass
 class CookingPot(Task):
-
+    def __init__(self):
+        super().__init__(x, y, progress, key)
     def animate(self):
-        screen.blit(cookingpot_sprite, ((WIDTH - 50) // 2,(HEIGHT - 50) // 2))
-
-
-        """self.oscillationspeed = int(1/(self.progress*(FRAMERATE/100)))
-        self.n = 0
-        if self.n == self.oscillationspeed:
-            cookingpot_sprite = pygame.transform.rotate(cookingpot_sprite, -5)
-            self.n = 0
+        if self.toggle_lid == True:
+            screen.blit(cookingpot_lid_right, ((WIDTH - 50) // 2 + 182, (HEIGHT - 50) // 2 - 12))
         else:
-            self.n += 1"""
+            screen.blit(cookingpot_lid_left, ((WIDTH - 50) // 2 + 182, (HEIGHT - 50) // 2 - 12))
+
+
 
 cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
 Cooking_pot = CookingPot(cooking_pot_x, cooking_pot_y, 0, randomKey("K_a"))
