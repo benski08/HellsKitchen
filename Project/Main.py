@@ -42,16 +42,38 @@ text_surface = menu_font.render("START", True, BLACK)
 text_rect = text_surface.get_rect(center=button_rect.center)
 
 #HIGHSCORETEXT
-score_font = pygame.font.SysFont("Arial", 40)
-score_width = 100
+score_font = pygame.font.SysFont("Arial", 20, bold=True)
+score_width = 150
 score_height = 30
-score_x = WIDTH - score_width //2
-score_y = HEIGHT - score_height//2
+score_x = WIDTH - score_width //2 - 95
+score_y = HEIGHT - score_height//2 - 400
 
-def scoreRender(score,x,y,width,height):
-    high_score_surface = score_font.render(f"HIGHSCORE: {score}", True, WHITE)
-    hs_rect = pygame.Rect(x, y, width, height)
-    screen.blit(high_score_surface, hs_rect)
+
+def scoreRender(score, x, y, width, height, alpha=0):
+    # Create transparent surface
+    transparent_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+    transparent_surface.fill((255, 255, 255, alpha))  # Last value is Alpha (0 = Fully Transparent, 255 = Fully Opaque)
+    # Create the text surface
+    high_score_surface = score_font.render(f"SCORE: {round(score, 0)}", True, WHITE)
+    # Get text rectangle and center it in hs_rect
+    hs_text_rect = high_score_surface.get_rect(center=(width // 2, height // 2))
+    # Blit the text onto the transparent surface
+    transparent_surface.blit(high_score_surface, hs_text_rect)
+    # blit text to main screen
+    screen.blit(transparent_surface, (x, y))
+
+"""def scoreRendernum(score, x, y, width, height, alpha=0):
+    # Create transparent surface
+    transparent_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+    transparent_surface.fill((255, 255, 255, alpha))  # Last value is Alpha (0 = Fully Transparent, 255 = Fully Opaque)
+    # Create the text surface
+    high_score_surface = score_font.render(f"SCORE: {round(score, 0)}", True, WHITE)
+    # Get text rectangle and center it in hs_rect
+    hs_text_rect = high_score_surface.get_rect(center=(width // 2, height // 2))
+    # Blit the text onto the transparent surface
+    transparent_surface.blit(high_score_surface, hs_text_rect)
+    # blit text to main screen
+    screen.blit(transparent_surface, (x, y))"""
 
 #keystroke definitions
 key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
@@ -129,6 +151,8 @@ while running:
 
     while start_game: #once start button is pressed
         screen.blit(game_bg, (0, 0))
+        #render score
+        scoreRender(score, score_x, score_y, score_width, score_height)
         #render buttons
         CooPot.controlInfo(Cooking_pot, 25)
         for event in pygame.event.get():
@@ -147,7 +171,6 @@ while running:
         else:
             Cooking_pot.pBarUpdate()
             Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
-        scoreRender(score, score_x,score_y, score_width, score_height)
         pygame.display.update()
         clock.tick(FRAMERATE)
 
