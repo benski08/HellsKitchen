@@ -1,6 +1,5 @@
 #imports
 from pygame import MOUSEBUTTONDOWN
-
 from Functions import *
 import time, random, sys, pygame
 from Tasks import *
@@ -8,7 +7,7 @@ from Tasks import *
 
 #config
 pygame.init()
-
+#assets
 screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hells_Kitchen')
 title_bg = pygame.image.load("images/title_bg.jpg").convert()
@@ -20,7 +19,7 @@ game_icon = pygame.image.load("images/gordon.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 
 start_game = False
-gameOver = False
+game_over = False
 running = True
 
 GRAY = (180,180,180)
@@ -41,45 +40,35 @@ button_rect = pygame.Rect(menu_button_x, menu_button_y, menu_button_width, menu_
 text_surface = menu_font.render("START", True, BLACK)
 text_rect = text_surface.get_rect(center=button_rect.center)
 
-#HIGHSCORETEXT
-score_font = pygame.font.SysFont("Arial", 20, bold=True)
-score_width = 150
-score_height = 30
-score_x = WIDTH - score_width //2 - 95
-score_y = HEIGHT - score_height//2 - 400
+# SCORETEXT
+SCORE_TEXT_WIDTH = 150
+SCORE_TEXT_HEIGHT = 30
+SCORE_TEXT_X = WIDTH - SCORE_TEXT_WIDTH // 2 - 95
+SCORE_TEXT_Y = HEIGHT - SCORE_TEXT_HEIGHT // 2 - 400
 
+# SCORENUMBER
+SCORE_NUM_WIDTH = 150
+SCORE_NUM_HEIGHT = 30
+SCORE_NUM_X = WIDTH - SCORE_NUM_WIDTH // 2 - 95
+SCORE_NUM_Y = HEIGHT - SCORE_NUM_HEIGHT // 2 - 370
 
-def scoreRender(score, x, y, width, height, alpha=0):
-    # Create transparent surface
-    transparent_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-    transparent_surface.fill((255, 255, 255, alpha))  # Last value is Alpha (0 = Fully Transparent, 255 = Fully Opaque)
-    # Create the text surface
-    high_score_surface = score_font.render(f"SCORE: {round(score, 0)}", True, WHITE)
-    # Get text rectangle and center it in hs_rect
-    hs_text_rect = high_score_surface.get_rect(center=(width // 2, height // 2))
-    # Blit the text onto the transparent surface
-    transparent_surface.blit(high_score_surface, hs_text_rect)
-    # blit text to main screen
-    screen.blit(transparent_surface, (x, y))
+# HIGHSCORETEXT
+HS_TEXT_WIDTH = 300
+HS_TEXT_HEIGHT = 150
+HS_TEXT_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
+HS_TEXT_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 330
 
-"""def scoreRendernum(score, x, y, width, height, alpha=0):
-    # Create transparent surface
-    transparent_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-    transparent_surface.fill((255, 255, 255, alpha))  # Last value is Alpha (0 = Fully Transparent, 255 = Fully Opaque)
-    # Create the text surface
-    high_score_surface = score_font.render(f"SCORE: {round(score, 0)}", True, WHITE)
-    # Get text rectangle and center it in hs_rect
-    hs_text_rect = high_score_surface.get_rect(center=(width // 2, height // 2))
-    # Blit the text onto the transparent surface
-    transparent_surface.blit(high_score_surface, hs_text_rect)
-    # blit text to main screen
-    screen.blit(transparent_surface, (x, y))"""
+# HIGHSCORENUMBER
+HS_NUM_WIDTH = 300
+HS_NUM_HEIGHT = 150
+HS_NUM_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
+HS_NUM_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 300
 
 #keystroke definitions
 key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
 used_list = ["K_a","K_a","K_a"]
 
-#controlsinfo buttons
+#control info squares
 info_font = pygame.font.SysFont("Arial", 30, bold=True)
 SIDELENGTH = 25
 
@@ -92,17 +81,24 @@ play_again_rect = pygame.Rect(pa_button_x, pa_button_y, pa_button_width, pa_butt
 pa_text_surface = play_again_font.render("PLAY AGAIN?", True, BLACK)
 pa_text_rect = pa_text_surface.get_rect(center=play_again_rect.center)
 
-def gameOver():
+def gameOver(score):
     global running
     global start_game
-    gameOver = True
+    global game_over
+    game_over = True
     start_game = False
+    #update high score
+    if score > readHighScore():
+        writeHighScore(score)
+    high_score = readHighScore()
     #render play again button
     Cooking_pot.progress = 0
-    while gameOver == True:
+    while game_over == True:
         screen.blit(title_bg, (0, 0))
         pygame.draw.rect(screen, GRAY, play_again_rect)
         screen.blit(pa_text_surface, pa_text_rect)
+        highScoreText(screen, HS_TEXT_X, HS_TEXT_Y, HS_TEXT_WIDTH, HS_TEXT_HEIGHT, WHITE)
+        highScoreNum(high_score, screen, HS_NUM_X, HS_NUM_Y, HS_NUM_WIDTH, HS_NUM_HEIGHT, WHITE)
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -111,7 +107,7 @@ def gameOver():
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_again_rect.collidepoint(event.pos):
-                    gameOver = False
+                    game_over = False
                     print("Hello")
             else:
                 pass
@@ -152,7 +148,8 @@ while running:
     while start_game: #once start button is pressed
         screen.blit(game_bg, (0, 0))
         #render score
-        scoreRender(score, score_x, score_y, score_width, score_height)
+        scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
+        scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
         #render buttons
         CooPot.controlInfo(Cooking_pot, 25)
         for event in pygame.event.get():
@@ -167,7 +164,8 @@ while running:
                 #elif event.key == getattr(pygame, tea_pot_key):
                     #print("Tea pot")
         if Cooking_pot.progress >= 100:
-            gameOver()
+            print(score)
+            gameOver(score)
         else:
             Cooking_pot.pBarUpdate()
             Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
