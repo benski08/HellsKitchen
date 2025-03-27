@@ -28,6 +28,15 @@ class Task:
         self.MAXSCORE = 100
         self.score = (self.MAXSCORE/100) * self.progress
         return self.score
+    def controlInfo(self, side_length, x, y, alpha=0):
+        self.side_length = side_length
+        self.surface = self.font.render(self.key[2], True, (255, 255, 255))
+        self.cix = x
+        self.ciy = y
+        self.cI_rect = pygame.Rect(x, y, side_length, side_length)
+        self.text_rect = self.surface.get_rect(center=self.cI_rect.center)
+        pygame.draw.rect(self.screen, self.BLACK, self.cI_rect)
+        self.screen.blit(self.surface, self.text_rect)
 
 class CooPot(Task):
     import pygame
@@ -75,11 +84,5 @@ class CooPot(Task):
         pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
         self.progress += 100/(self.MAXTIME*30) * self.difficulty
         return self.progress
-    def controlInfo(self, side_length):
-        self.side_length = side_length
-        self.surface = self.font.render(self.key[2], True, (255, 255, 255))
-        x, y = self.pbarx - (side_length//2),self.pbary + 15
-        self.cI_rect = pygame.Rect(x, y, side_length, side_length)
-        self.text_rect = self.surface.get_rect(center=self.cI_rect.center)
-        pygame.draw.rect(self.screen, self.BLACK, self.cI_rect)
-        self.screen.blit(self.surface, self.text_rect)
+class Dishes():
+    pass

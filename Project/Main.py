@@ -16,6 +16,7 @@ cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").conv
 cookingpot_lid_left = pygame.image.load("images/cookingpot_lid_left.png").convert_alpha()
 plate = pygame.image.load("images/plate.png").convert_alpha()
 game_icon = pygame.image.load("images/gordon.png").convert_alpha()
+randomthingy = pygame.image.load("images/key-removebg-preview.png")
 pygame.display.set_icon(game_icon)
 
 start_game = False
@@ -72,17 +73,16 @@ HS_NUM_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 300
 key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
 used_list = ["K_a","K_a","K_a"]
 
-#control info squares
-info_font = pygame.font.SysFont("Arial", 30, bold=True)
-SIDELENGTH = 25
-
 #initialize cooking_pot
+info_font = pygame.font.SysFont("Arial", 30, bold=True)
 cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
 Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font)
 #cooking pot button
+SIDELENGTH = 25
 CP_info_surface = info_font.render(Cooking_pot.key[2], True, (255, 255, 255))
-CP_info_button_x, CP_info_button_y = (WIDTH - SIDELENGTH) // 2 + 400, (HEIGHT - SIDELENGTH) // 2 + 250
-print(CP_info_button_x, CP_info_button_y)
+CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 15
+
+
 
 
 # Play Again Button
@@ -138,6 +138,7 @@ while running:
     screen.blit(title_bg, (0, 0))
     pygame.draw.rect(screen, GRAY, button_rect)
     screen.blit(text_surface, text_rect)
+    screen.blit(randomthingy, (450, 300))
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -156,7 +157,7 @@ while running:
         scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
         scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
         #render buttons
-        CooPot.controlInfo(Cooking_pot, 25)
+        CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
