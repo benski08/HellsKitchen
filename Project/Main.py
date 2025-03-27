@@ -9,7 +9,7 @@ print("Imports Successful!")
 pygame.init()
 #assets
 screen = pygame.display.set_mode((900, 600))
-pygame.display.set_caption('Hells_Kitchen')
+pygame.display.set_caption('Hell´s Kitchen')
 title_bg = pygame.image.load("images/title_bg.jpg").convert()
 game_bg = pygame.image.load("images/game_bg.png").convert()
 cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").convert_alpha()
