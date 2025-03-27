@@ -1,7 +1,7 @@
 #imports
 from pygame import MOUSEBUTTONDOWN
 from Functions import *
-import time, random, sys, pygame
+import time, random, sys, pygame, math
 from Tasks import *
 
 
@@ -29,6 +29,7 @@ WHITE = (255,255,255)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 FRAMERATE = 30
+MAX_DIFFICULTY = 2
 
 clock = pygame.time.Clock()
 
@@ -72,6 +73,14 @@ used_list = ["K_a","K_a","K_a"]
 info_font = pygame.font.SysFont("Arial", 30, bold=True)
 SIDELENGTH = 25
 
+#initialize cooking_pot
+cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
+Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font)
+#cooking pot button
+CP_info_surface = info_font.render(Cooking_pot.key[2], True, (255, 255, 255))
+CP_info_button_x, CP_info_button_y = (WIDTH - SIDELENGTH) // 2 + 400, (HEIGHT - SIDELENGTH) // 2 + 250
+print(CP_info_button_x, CP_info_button_y)
+
 
 # Play Again Button
 play_again_font = pygame.font.SysFont('Arial', 35)
@@ -80,6 +89,7 @@ pa_button_x, pa_button_y = (WIDTH - pa_button_width) // 2, (HEIGHT - pa_button_h
 play_again_rect = pygame.Rect(pa_button_x, pa_button_y, pa_button_width, pa_button_height)
 pa_text_surface = play_again_font.render("PLAY AGAIN?", True, BLACK)
 pa_text_rect = pa_text_surface.get_rect(center=play_again_rect.center)
+
 
 def gameOver(score):
     global running
@@ -113,16 +123,6 @@ def gameOver(score):
                 pass
     return
 
-cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
-Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font)
-
-print(Cooking_pot.key, used_list)
-
-
-#cooking pot button
-CP_info_surface = info_font.render(Cooking_pot.key[2], True, (255, 255, 255))
-CP_info_button_x, CP_info_button_y = (WIDTH - SIDELENGTH) // 2 + 400, (HEIGHT - SIDELENGTH) // 2 + 250
-print(CP_info_button_x, CP_info_button_y)
 
 #tea pot button
 #TP_info_surface = info_font.render(tea_pot_key[2], True, (255, 255, 255))
@@ -146,6 +146,8 @@ while running:
                 start_game = True
 
     while start_game: #once start button is pressed
+        #calculate difficulty
+        difficulty_multiplier = calculateDifficulty(score, MAX_DIFFICULTY)
         screen.blit(game_bg, (0, 0))
         #render score
         scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
@@ -167,7 +169,7 @@ while running:
             print(score)
             gameOver(score)
         else:
-            Cooking_pot.pBarUpdate()
+            Cooking_pot.pBarUpdate(difficulty_multiplier)
             Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
         pygame.display.update()
         clock.tick(FRAMERATE)

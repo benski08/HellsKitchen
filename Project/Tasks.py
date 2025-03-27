@@ -1,5 +1,5 @@
 import pygame
-
+from Functions import *
 class Task:
     def __init__(self, progress, key, screen, key_list, used_list, info_font):
         self.font = info_font
@@ -37,14 +37,14 @@ class CooPot(Task):
         self.frame_counter = 0
         self.pbarx = (self.screen.get_width() - 80) // 2 + 241
         self.pbary = (self.screen.get_height() - 70)// 2 - 37
+        self.rlid_x = (self.screen.get_width() - 80) // 2 + 195
+        self.rlid_y = (self.screen.get_height() - 70) // 2
+        self.llid_x = (self.screen.get_width() - 80) // 2 + 195
+        self.llid_y = (self.screen.get_height() - 61) // 2 - 10
     def animate(self, state_1, state_2):
         #pot lid animation
         self.state_1 = state_1
         self.state_2  = state_2
-        self.rlid_x = (self.screen.get_width() - 80)// 2 + 195
-        self.rlid_y = (self.screen.get_height() - 70)// 2
-        self.llid_x = (self.screen.get_width() - 80) // 2 + 195
-        self.llid_y = (self.screen.get_height() - 61) // 2 - 10
         self.min_frames = 1 #in frames
         self.max_frames = 30 #in frames
         self.switch_rate = int(self.max_frames - (self.progress / 100) * (self.max_frames - self.min_frames)) #calculate switchrate based on progress
@@ -63,7 +63,8 @@ class CooPot(Task):
         self.progress = 0
         self.randomKey(self.key)
         #score
-    def pBarUpdate(self):
+    def pBarUpdate(self, difficulty):
+        self.difficulty = difficulty
         self.MAXTIME = 5
         self.pbarMAXWIDTH = 80
         self.pbarHEIGHT = 10
@@ -72,7 +73,7 @@ class CooPot(Task):
         self.p_bar_rect = pygame.Rect(self.pbarx - self.XDISPLACEMENT,self.pbary, self.pbarWIDTH, self.pbarHEIGHT)
         self.COLOR = (self.progress/100 * 255, (1-self.progress/100)*255,0)
         pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
-        self.progress += 100/(self.MAXTIME*30)
+        self.progress += 100/(self.MAXTIME*30) * self.difficulty
         return self.progress
     def controlInfo(self, side_length):
         self.side_length = side_length
