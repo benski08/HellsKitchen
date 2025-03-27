@@ -2,7 +2,7 @@ import random, pygame
 
 pygame.init()
 score_font = pygame.font.SysFont("Comic Sans MS", 20, bold=True)
-high_score_font = pygame.font.SysFont("Arial", 120, bold=True)
+high_score_font = pygame.font.SysFont("Arial", 50, bold=True)
 
 def scoreRenderText(screen, x, y, width, height, color, alpha=0):
     # Create transparent surface
