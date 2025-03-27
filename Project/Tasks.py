@@ -28,15 +28,29 @@ class Task:
         self.MAXSCORE = 100
         self.score = (self.MAXSCORE/100) * self.progress
         return self.score
-    def controlInfo(self, side_length, x, y, alpha=0):
+
+    def controlInfo(self, side_length, x, y, image, image_width, image_height, alpha=0):
         self.side_length = side_length
-        self.surface = self.font.render(self.key[2], True, (255, 255, 255))
-        self.cix = x
-        self.ciy = y
-        self.cI_rect = pygame.Rect(x, y, side_length, side_length)
-        self.text_rect = self.surface.get_rect(center=self.cI_rect.center)
-        pygame.draw.rect(self.screen, self.BLACK, self.cI_rect)
-        self.screen.blit(self.surface, self.text_rect)
+        self.surface = self.font.render(self.key[2], True, (0,0,0))  # Render text
+
+        # Create a transparent surface with per-pixel alpha
+        transparent_surface = pygame.Surface((side_length, side_length), pygame.SRCALPHA)
+        transparent_surface.fill((255, 255, 255, alpha))  # Set transparency
+
+        # Center the text on the transparent surface
+        text_rect = self.surface.get_rect(center=(side_length // 2, side_length // 2))
+        transparent_surface.blit(self.surface, text_rect)  # Blit text onto transparent surface
+
+        # Blit the image first
+        self.screen.blit(image, (x-image_width/2 + 12, y - image_height/2 + 12))  # Use x, y for positioning the image
+
+        # Then blit the transparent surface with text on top
+        self.screen.blit(transparent_surface, (x, y-2))
+
+        # Finally, re-blit the text to ensure it's on top
+        self.screen.blit(self.surface, (x + (side_length - text_rect.width) // 2,
+                                        y + (side_length - text_rect.height) // 2 - 2))
+
 
 class CooPot(Task):
     import pygame
@@ -46,6 +60,7 @@ class CooPot(Task):
         self.frame_counter = 0
         self.pbarx = (self.screen.get_width() - 80) // 2 + 241
         self.pbary = (self.screen.get_height() - 70)// 2 - 37
+        print(self.pbarx, self.pbary)
         self.rlid_x = (self.screen.get_width() - 80) // 2 + 195
         self.rlid_y = (self.screen.get_height() - 70) // 2
         self.llid_x = (self.screen.get_width() - 80) // 2 + 195
