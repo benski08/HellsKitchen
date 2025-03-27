@@ -16,7 +16,6 @@ cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").conv
 cookingpot_lid_left = pygame.image.load("images/cookingpot_lid_left.png").convert_alpha()
 plate = pygame.image.load("images/plate.png").convert_alpha()
 game_icon = pygame.image.load("images/gordon.png").convert_alpha()
-randomthingy = pygame.image.load("images/key-removebg-preview.png")
 pygame.display.set_icon(game_icon)
 
 start_game = False
@@ -138,7 +137,6 @@ while running:
     screen.blit(title_bg, (0, 0))
     pygame.draw.rect(screen, GRAY, button_rect)
     screen.blit(text_surface, text_rect)
-    screen.blit(randomthingy, (450, 300))
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
