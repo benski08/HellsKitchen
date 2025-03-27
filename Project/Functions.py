@@ -1,7 +1,5 @@
 import random, pygame, math
 
-from Project.Main import difficulty_multiplier
-
 pygame.init()
 score_font = pygame.font.SysFont("Comic Sans MS", 20, bold=True)
 high_score_font = pygame.font.SysFont("Arial", 50, bold=True)
@@ -70,14 +68,15 @@ def readHighScore(filename="HIGHSCORE.txt"):
         with open(filename, "w") as file:
             file.write("0")
         return 0
-def calculateDifficulty(score, max_difficulty):
+def calculateDifficulty(score, min_difficulty, max_difficulty, scaling_speed):
     if score == 0:
-        difficulty_multiplier = 1
+        difficulty_multiplier = min_difficulty
     else:
-        difficulty_multiplier = math.log10(score)
+        difficulty_multiplier = math.log10(score/(1/scaling_speed))
 
     if difficulty_multiplier >= max_difficulty:
         difficulty_multiplier = max_difficulty
-        return difficulty_multiplier
-    else:
-        return difficulty_multiplier
+    elif difficulty_multiplier <= min_difficulty:
+        difficulty_multiplier = min_difficulty
+    print(difficulty_multiplier)
+    return difficulty_multiplier

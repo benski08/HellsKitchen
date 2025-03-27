@@ -3,7 +3,7 @@ from pygame import MOUSEBUTTONDOWN
 from Functions import *
 import time, random, sys, pygame, math
 from Tasks import *
-
+print("Imports Successful!")
 
 #config
 pygame.init()
@@ -29,7 +29,10 @@ WHITE = (255,255,255)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 FRAMERATE = 30
-MAX_DIFFICULTY = 2
+MIN_DIFFICULTY = 1
+MAX_DIFFICULTY = 5
+DIFF_SCALING = 0.5
+
 
 clock = pygame.time.Clock()
 
@@ -147,7 +150,7 @@ while running:
 
     while start_game: #once start button is pressed
         #calculate difficulty
-        difficulty_multiplier = calculateDifficulty(score, MAX_DIFFICULTY)
+        difficulty_multiplier = calculateDifficulty(score, MIN_DIFFICULTY, MAX_DIFFICULTY, DIFF_SCALING)
         screen.blit(game_bg, (0, 0))
         #render score
         scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)

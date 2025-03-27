@@ -46,7 +46,7 @@ class CooPot(Task):
         self.state_1 = state_1
         self.state_2  = state_2
         self.min_frames = 1 #in frames
-        self.max_frames = 30 #in frames
+        self.max_frames = 10 #in frames
         self.switch_rate = int(self.max_frames - (self.progress / 100) * (self.max_frames - self.min_frames)) #calculate switchrate based on progress
         if self.state_1 is None or self.state_2 is None:
             print("Error: Images not loaded properly")
