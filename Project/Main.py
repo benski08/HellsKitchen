@@ -16,7 +16,7 @@ cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").conv
 cookingpot_lid_left = pygame.image.load("images/cookingpot_lid_left.png").convert_alpha()
 plate = pygame.image.load("images/plate.png").convert_alpha()
 game_icon = pygame.image.load("images/gordon.png").convert_alpha()
-key_bg = pygame.image.load("images/key no bg resized.png").convert_alpha()
+key_bg = pygame.image.load("images/key_fixed-removebg-preview.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 
 start_game = False
