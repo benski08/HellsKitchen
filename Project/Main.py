@@ -83,7 +83,10 @@ cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
 Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font)
 #cooking pot button
 SIDELENGTH = 25
-CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 15
+CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 12
+
+#initialize dishes
+Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font)
 
 
 
@@ -129,12 +132,6 @@ def gameOver(score):
                 pass
     return
 
-
-#tea pot button
-#TP_info_surface = info_font.render(tea_pot_key[2], True, (255, 255, 255))
-#TP_info_button_x, TP_info_button_y = (WIDTH - info_button_width) // 2 + 400, (HEIGHT - info_button_height) // 2 + 250
-
-
 #game loop
 while running:
     score = 0
@@ -171,12 +168,14 @@ while running:
                     Cooking_pot.interact()
                 #elif event.key == getattr(pygame, tea_pot_key):
                     #print("Tea pot")
-        if Cooking_pot.progress >= 100:
-            print(score)
+        if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
             gameOver(score)
         else:
+            #update Cookingpot
             Cooking_pot.pBarUpdate(difficulty_multiplier)
             Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
+            #update Dishes
+            Dishes.pBarUpdate(difficulty_multiplier)
         pygame.display.update()
         clock.tick(FRAMERATE)
 

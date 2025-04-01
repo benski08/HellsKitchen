@@ -51,6 +51,9 @@ class Task:
         self.screen.blit(self.surface, (x + (side_length - text_rect.width) // 2,
                                         y + (side_length - text_rect.height) // 2 - 2))
 
+    def interact(self):
+        self.progress = 0
+        self.randomKey(self.key)
 
 class CooPot(Task):
     import pygame
@@ -58,9 +61,11 @@ class CooPot(Task):
         super().__init__(progress, key, screen, key_list, used_list, info_font)
         self.toggle_lid = True
         self.frame_counter = 0
-        self.pbarx = (self.screen.get_width() - 80) // 2 + 241
+        self.MAXTIME = 5
+        self.pbarMAXWIDTH = 80
+        self.pbarHEIGHT = 10
+        self.pbarx = (self.screen.get_width() - self.pbarMAXWIDTH) // 2 + 241
         self.pbary = (self.screen.get_height() - 70)// 2 - 37
-        print(self.pbarx, self.pbary)
         self.rlid_x = (self.screen.get_width() - 80) // 2 + 195
         self.rlid_y = (self.screen.get_height() - 70) // 2
         self.llid_x = (self.screen.get_width() - 80) // 2 + 195
@@ -83,15 +88,9 @@ class CooPot(Task):
             self.screen.blit(self.state_1, (self.llid_x, self.llid_y))
         self.frame_counter += 1
         self.pygame.display.update()
-    def interact(self):
-        self.progress = 0
-        self.randomKey(self.key)
         #score
     def pBarUpdate(self, difficulty):
         self.difficulty = difficulty
-        self.MAXTIME = 5
-        self.pbarMAXWIDTH = 80
-        self.pbarHEIGHT = 10
         self.pbarWIDTH = self.pbarMAXWIDTH/100 * self.progress
         self.XDISPLACEMENT = self.pbarWIDTH/2
         self.p_bar_rect = pygame.Rect(self.pbarx - self.XDISPLACEMENT,self.pbary, self.pbarWIDTH, self.pbarHEIGHT)
@@ -99,5 +98,22 @@ class CooPot(Task):
         pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
         self.progress += 100/(self.MAXTIME*30) * self.difficulty
         return self.progress
-class Dishes():
+class Dishes(Task):
+    import pygame
+    def __init__(self, progress, key, screen, key_list, used_list, info_font):
+        super().__init__(progress, key, screen, key_list, used_list, info_font)
+        self.pbarMAXHEIGHT = 80
+        self.pbarWIDTH = 10
+        self.pbary = (self.WIDTH - self.pbarMAXHEIGHT)//2
+        self.pbarx = (self.HEIGHT - self.pbarWIDTH)//2
+    def pBarUpdate(self, difficulty):
+        self.difficulty = difficulty
+        self.MAXTIME = 5
+        self.pbarWIDTH = self.pbarMAXHEIGHT/100 * self.progress
+        self.YDISPLACEMENT = self.pbarWIDTH/2
+        self.p_bar_rect = pygame.Rect(self.pbary - self.YDISPLACEMENT,self.pbarx, self.pbarWIDTH, self.pbarWIDTH)
+        self.COLOR = (self.progress/100 * 255, (1-self.progress/100)*255,0)
+        pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
+        self.progress += 100/(self.MAXTIME*30) * self.difficulty
+        return self.progress
     pass
