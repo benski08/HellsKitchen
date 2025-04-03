@@ -1,5 +1,8 @@
 import pygame
 from Functions import *
+
+
+
 class Task:
     def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
         self.blast_old_pbar = blast_old_pbar
@@ -52,9 +55,12 @@ class Task:
         self.screen.blit(self.surface, (x + (side_length - text_rect.width) // 2,
                                         y + (side_length - text_rect.height) // 2 - 2))
 
-    def interact(self):
+    def interact(self, game_bg):
         self.progress = 0
         self.randomKey(self.key)
+        if self.blast_old_pbar == True:
+            self.screen.blit(game_bg, (0,0))
+            self.blast_old_pbar = False
 
 class CooPot(Task):
     import pygame
@@ -124,4 +130,3 @@ class Dishes(Task):
     class Kettle():
         def SoundStart(self, kettle):
             kettle.play()
-    def

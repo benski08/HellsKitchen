@@ -84,13 +84,13 @@ used_list = ["K_a","K_a","K_a"]
 #initialize cooking_pot
 info_font = pygame.font.SysFont("Comic Sans MS", 28, bold=True)
 cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
-Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font)
+Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
 #cooking pot button
 SIDELENGTH = 25
 CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 12
 
 #initialize dishes
-Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font)
+Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
 
 
 
@@ -148,8 +148,8 @@ while running:
     pygame.draw.rect(screen, GRAY, button_rect)
     screen.blit(text_surface, text_rect)
     pygame.display.flip()
-    Cooking_pot.interact()
-    Dishes.interact()
+    Cooking_pot.interact(game_bg)
+    Dishes.interact(game_bg)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -165,27 +165,15 @@ while running:
 
     while start_game: #once start button is pressed
         #calculate difficulty
+        game_bg_rendered = Cooking_pot.blast_old_pbar
         difficulty_multiplier = calculateDifficulty(score, MIN_DIFFICULTY, MAX_DIFFICULTY, DIFF_SCALING)
         if not game_bg_rendered:
             screen.blit(game_bg, (0, 0))
             game_bg_rendered = True
-        #render score
-        scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
-        scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
-        #render buttons
-        CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
-        Dishes.controlInfo(SIDELENGTH, 450, 300, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
-        #update Tasks
-        # update Cookingpot
-        Cooking_pot.pBarUpdate(difficulty_multiplier)
-        Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
-        # update Dishes
-        Dishes.pBarUpdate(difficulty_multiplier)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
                 running = False
-
             if event.type == pygame.KEYDOWN:
                 if event.key == K_ESCAPE:
                     start_game = False
@@ -194,15 +182,28 @@ while running:
                 if event.key == getattr(pygame, Cooking_pot.key):
                     print("Cooking pot")
                     score += Cooking_pot.calculateScore()
-                    Cooking_pot.interact()
+                    Cooking_pot.interact(game_bg)
                 if event.key == getattr(pygame, Dishes.key):
                     print("Dishes")
                     score += Dishes.calculateScore()
-                    Dishes.interact()
+                    Dishes.interact(game_bg)
 
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
             gameOver(score)
         else:
+            # render score
+            scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
+            scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
+            # render buttons
+            CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH,
+                               INFOKEY_HEIGHT)
+            Dishes.controlInfo(SIDELENGTH, 450, 300, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+            # update Tasks
+            # update Cookingpot
+            Cooking_pot.pBarUpdate(difficulty_multiplier)
+            Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
+            # update Dishes
+            Dishes.pBarUpdate(difficulty_multiplier)
             refresh_rects = [Cooking_pot.p_bar_rect, Dishes.p_bar_rect]
             pygame.display.update(refresh_rects)
             clock.tick(FRAMERATE)
