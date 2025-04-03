@@ -120,3 +120,8 @@ class Dishes(Task):
         print(self.p_bar_rect)
         return self.progress
     pass
+
+    class Kettle():
+        def SoundStart(self, kettle):
+            kettle.play()
+    def
