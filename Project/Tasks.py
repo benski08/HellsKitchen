@@ -107,6 +107,7 @@ class Dishes(Task):
         self.pbary = (self.HEIGHT - self.pbarMAXHEIGHT)//2
         self.pbarx = (self.WIDTH - self.pbarWIDTH)//2
         self.MAXTIME = 5
+
     def pBarUpdate(self, difficulty):
         self.difficulty = difficulty
         self.pbarHEIGHT = int(self.pbarMAXHEIGHT/100 * self.progress)

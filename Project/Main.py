@@ -7,6 +7,8 @@ print("Imports Successful!")
 
 #config
 pygame.init()
+pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN])
+
 #assets
 screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hell´s Kitchen')
@@ -30,8 +32,8 @@ WHITE = (255,255,255)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 FRAMERATE = 30
-MIN_DIFFICULTY = 1
-MAX_DIFFICULTY = 5
+MIN_DIFFICULTY = 0.5
+MAX_DIFFICULTY = 2
 DIFF_SCALING = 0.5
 refresh_rects = []
 clock = pygame.time.Clock()
