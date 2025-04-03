@@ -115,6 +115,6 @@ class Dishes(Task):
         self.COLOR = (int((self.progress/100 * 255)), int((1-self.progress/100)*255),0)
         pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
         self.progress += 100/(self.MAXTIME*30) * self.difficulty
-        print(self.p_bar_rect)
+
         return self.progress
     pass

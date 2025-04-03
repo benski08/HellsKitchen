@@ -1,5 +1,5 @@
 #imports
-from pygame import MOUSEBUTTONDOWN
+from pygame import MOUSEBUTTONDOWN, K_ESCAPE
 from Functions import *
 import time, random, sys, pygame, math
 from Tasks import *
@@ -33,13 +33,13 @@ FRAMERATE = 30
 MIN_DIFFICULTY = 1
 MAX_DIFFICULTY = 5
 DIFF_SCALING = 0.5
-
+refresh_rects = []
 clock = pygame.time.Clock()
 
-CP_INFOKEY_WIDTH = 75
-CP_INFOKEY_HEIGHT = int(CP_INFOKEY_WIDTH/1.776)
+INFOKEY_WIDTH = 75
+INFOKEY_HEIGHT = int(INFOKEY_WIDTH / 1.776)
 #resize if necessary
-key_bg = pygame.transform.scale(key_bg, (CP_INFOKEY_WIDTH, CP_INFOKEY_HEIGHT))
+key_bg = pygame.transform.scale(key_bg, (INFOKEY_WIDTH, INFOKEY_HEIGHT))
 
 #Menubutton
 menu_font = pygame.font.SysFont('Comic Sans MS', 40)
@@ -106,23 +106,27 @@ def gameOver(score):
     global game_over
     game_over = True
     start_game = False
+    Cooking_pot.progress = 0
+    Dishes.progress = 0
     #update high score
     if score > readHighScore():
         writeHighScore(score)
     high_score = readHighScore()
-    #render play again button
-    Cooking_pot.progress = 0
     while game_over == True:
         screen.blit(title_bg, (0, 0))
         pygame.draw.rect(screen, GRAY, play_again_rect)
         screen.blit(pa_text_surface, pa_text_rect)
         highScoreText(screen, HS_TEXT_X, HS_TEXT_Y, HS_TEXT_WIDTH, HS_TEXT_HEIGHT, WHITE)
         highScoreNum(high_score, screen, HS_NUM_X, HS_NUM_Y, HS_NUM_WIDTH, HS_NUM_HEIGHT, WHITE)
-        pygame.display.update()
+        pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
                 return
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_again_rect.collidepoint(event.pos):
@@ -135,10 +139,11 @@ def gameOver(score):
 #game loop
 while running:
     score = 0
+    prev_score = 0
     screen.blit(title_bg, (0, 0))
     pygame.draw.rect(screen, GRAY, button_rect)
     screen.blit(text_surface, text_rect)
-    pygame.display.update()
+    pygame.display.flip()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -147,6 +152,9 @@ while running:
                 #game start
                 screen.blit(game_bg, (0, 0))
                 start_game = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == K_ESCAPE:
+                running = False
 
     while start_game: #once start button is pressed
         #calculate difficulty
@@ -156,27 +164,37 @@ while running:
         scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
         scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
         #render buttons
-        CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, CP_INFOKEY_WIDTH, CP_INFOKEY_HEIGHT)
+        CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Dishes.controlInfo(SIDELENGTH, 450, 300, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        #update Tasks
+        # update Cookingpot
+        Cooking_pot.pBarUpdate(difficulty_multiplier)
+        Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
+        # update Dishes
+        Dishes.pBarUpdate(difficulty_multiplier)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
                 running = False
+
             if event.type == pygame.KEYDOWN:
+                if event.key == K_ESCAPE:
+                    start_game = False
+                    running = False
+
                 if event.key == getattr(pygame, Cooking_pot.key):
                     print("Cooking pot")
                     score += Cooking_pot.calculateScore()
                     Cooking_pot.interact()
-                #elif event.key == getattr(pygame, tea_pot_key):
-                    #print("Tea pot")
+                if event.key == getattr(pygame, Dishes.key):
+                    print("Dishes")
+                    score += Dishes.calculateScore()
+                    Dishes.interact()
+
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
             gameOver(score)
         else:
-            #update Cookingpot
-            Cooking_pot.pBarUpdate(difficulty_multiplier)
-            Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
-            #update Dishes
-            Dishes.pBarUpdate(difficulty_multiplier)
-        pygame.display.update()
-        clock.tick(FRAMERATE)
+            pygame.display.flip()
+            clock.tick(FRAMERATE)
 
 pygame.quit()
