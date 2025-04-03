@@ -14,6 +14,7 @@ screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hell´s Kitchen')
 title_bg = pygame.image.load("images/title_bg.jpg").convert()
 game_bg = pygame.image.load("images/game_bg.png").convert()
+game_bg_rendered = False
 cookingpot_lid_right = pygame.image.load("images/cookingpot_lid_right.png").convert_alpha()
 cookingpot_lid_left = pygame.image.load("images/cookingpot_lid_left.png").convert_alpha()
 plate = pygame.image.load("images/plate.png").convert_alpha()
@@ -31,7 +32,7 @@ GREEN = (0, 255, 0)
 WHITE = (255,255,255)
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
-FRAMERATE = 30
+FRAMERATE = 15
 MIN_DIFFICULTY = 0.5
 MAX_DIFFICULTY = 2
 DIFF_SCALING = 0.5
@@ -146,6 +147,8 @@ while running:
     pygame.draw.rect(screen, GRAY, button_rect)
     screen.blit(text_surface, text_rect)
     pygame.display.flip()
+    Cooking_pot.interact()
+    Dishes.interact()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -153,6 +156,7 @@ while running:
             if button_rect.collidepoint(event.pos):
                 #game start
                 screen.blit(game_bg, (0, 0))
+                game_bg_rendered = True
                 start_game = True
         elif event.type == pygame.KEYDOWN:
             if event.key == K_ESCAPE:
@@ -161,7 +165,9 @@ while running:
     while start_game: #once start button is pressed
         #calculate difficulty
         difficulty_multiplier = calculateDifficulty(score, MIN_DIFFICULTY, MAX_DIFFICULTY, DIFF_SCALING)
-        screen.blit(game_bg, (0, 0))
+        if not game_bg_rendered:
+            screen.blit(game_bg, (0, 0))
+            game_bg_rendered = True
         #render score
         scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
         scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
@@ -196,7 +202,8 @@ while running:
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
             gameOver(score)
         else:
-            pygame.display.flip()
+            refresh_rects = [Cooking_pot.p_bar_rect, Dishes.p_bar_rect]
+            pygame.display.update(refresh_rects)
             clock.tick(FRAMERATE)
 
 pygame.quit()

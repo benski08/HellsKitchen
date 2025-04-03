@@ -1,7 +1,8 @@
 import pygame
 from Functions import *
 class Task:
-    def __init__(self, progress, key, screen, key_list, used_list, info_font):
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
+        self.blast_old_pbar = blast_old_pbar
         self.font = info_font
         self.screen = screen
         self.used_list = used_list
@@ -57,8 +58,8 @@ class Task:
 
 class CooPot(Task):
     import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font):
-        super().__init__(progress, key, screen, key_list, used_list, info_font)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, blast_old_pbar)
         self.toggle_lid = True
         self.frame_counter = 0
         self.MAXTIME = 5
@@ -100,8 +101,8 @@ class CooPot(Task):
         return self.progress
 class Dishes(Task):
     import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font):
-        super().__init__(progress, key, screen, key_list, used_list, info_font)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, blast_old_pbar)
         self.pbarMAXHEIGHT = 80
         self.pbarWIDTH = 10
         self.pbary = (self.HEIGHT - self.pbarMAXHEIGHT)//2
