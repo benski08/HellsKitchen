@@ -78,5 +78,4 @@ def calculateDifficulty(score, min_difficulty, max_difficulty, scaling_speed):
         difficulty_multiplier = max_difficulty
     elif difficulty_multiplier <= min_difficulty:
         difficulty_multiplier = min_difficulty
-    print(difficulty_multiplier)
     return difficulty_multiplier
