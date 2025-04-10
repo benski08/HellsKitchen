@@ -94,8 +94,7 @@ class CooPot(Task):
         else:
             self.screen.blit(self.state_1, (self.llid_x, self.llid_y))
         self.frame_counter += 1
-        self.pygame.display.update()
-        #score
+        #self.pygame.display.update()
     def pBarUpdate(self, difficulty):
         self.difficulty = difficulty
         self.pbarWIDTH = int(self.pbarMAXWIDTH/100 * self.progress)
@@ -115,17 +114,31 @@ class Dishes(Task):
         self.pbarx = (self.WIDTH - self.pbarWIDTH)//2
         self.MAXTIME = 5
 
-    def pBarUpdate(self, difficulty):
-        self.difficulty = difficulty
-        self.pbarHEIGHT = int(self.pbarMAXHEIGHT/100 * self.progress)
-        self.YDISPLACEMENT = self.pbarHEIGHT/2
-        self.p_bar_rect = pygame.Rect(self.pbarx, self.pbary - self.YDISPLACEMENT, self.pbarWIDTH, self.pbarHEIGHT)
-        self.COLOR = (int((self.progress/100 * 255)), int((1-self.progress/100)*255),0)
-        pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
-        self.progress += 100/(self.MAXTIME*30) * self.difficulty
+    def update_progress(self, difficulty):
+        self.progress += 100/(self.MAXTIME*30) * difficulty
         return self.progress
+
     def animate(self, plate):
-        self.screen.blit(plate, (450, 300))
+        if self.progress >= 5:
+            self.screen.blit(plate, (482, 283))
+        if self.progress >= 15:
+            self.screen.blit(plate, (482, 275))
+        if self.progress >= 25:
+            self.screen.blit(plate, (482, 267))
+        if self.progress >= 35:
+            self.screen.blit(plate, (482, 259))
+        if self.progress >= 45:
+            self.screen.blit(plate, (482, 251))
+        if self.progress >= 55:
+            self.screen.blit(plate, (552, 283))
+        if self.progress >= 65:
+            self.screen.blit(plate, (552, 275))
+        if self.progress >= 75:
+            self.screen.blit(plate, (552, 267))
+        if self.progress >= 85:
+            self.screen.blit(plate, (552, 259))
+        if self.progress >= 95:
+            self.screen.blit(plate, (552, 251))
         return
     pass
 

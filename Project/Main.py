@@ -174,7 +174,7 @@ while running:
         scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
         # render buttons
         CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
-        Dishes.controlInfo(SIDELENGTH, 450, 300, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Dishes.controlInfo(SIDELENGTH, 450, 275, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         # update Tasks
         # update Cookingpot
         Cooking_pot.pBarUpdate(difficulty_multiplier)
@@ -182,7 +182,8 @@ while running:
         # update Dishes
         #Dishes.pBarUpdate(difficulty_multiplier)
         Dishes.animate(plate)
-        refresh_rects = [Cooking_pot.p_bar_rect]
+        Dishes.update_progress(difficulty_multiplier)
+        #refresh_rects = [Cooking_pot.p_bar_rect]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
@@ -203,7 +204,8 @@ while running:
 
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
             gameOver(score)
-        pygame.display.update(refresh_rects)
+        #pygame.display.update(refresh_rects)
+        pygame.display.update()
         clock.tick(FRAMERATE)
 
 pygame.quit()
