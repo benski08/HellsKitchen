@@ -22,6 +22,7 @@ game_icon = pygame.image.load("assets/gordon.png").convert_alpha()
 key_bg = pygame.image.load("assets/key_fixed-removebg-preview.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 kettle = pygame.mixer.Sound("assets/Whistling Kettle.mp3")
+bg_music = pygame.mixer.Sound("assets/bgmusic.mp3")
 
 start_game = False
 game_over = False
@@ -207,5 +208,7 @@ while running:
         #pygame.display.update(refresh_rects)
         pygame.display.update()
         clock.tick(FRAMERATE)
+        if not pygame.mixer.get_busy():
+            bg_music.play(1)
 
 pygame.quit()

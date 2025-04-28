@@ -211,8 +211,10 @@ while running:
 
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
             gameOver(score)
+            pygame.mixer.music.stop()
         else:
             clock.tick(FRAMERATE)
         pygame.display.update(refresh_rects)
-
+        if not pygame.mixer.get_busy():
+            bg_music.play(1)
 pygame.quit()
