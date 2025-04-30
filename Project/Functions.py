@@ -30,12 +30,12 @@ def scoreRenderNum(screen, score, x, y, width, height,color, alpha=0):
     # blit text to main screen
     screen.blit(transparent_surface, (x, y))
 
-def highScoreText(screen, x, y, width, height, color, alpha=0):
+def highScoreText(text, screen, x, y, width, height, color, alpha=0):
     # Create transparent surface
     transparent_surface = pygame.Surface((width, height), pygame.SRCALPHA)
     transparent_surface.fill((255, 255, 255, alpha)) # Last value is Alpha (0 = Fully Transparent, 255 = Fully Opaque)
     # Create the text surface
-    score_text_surface = high_score_font.render("HIGHSCORE:", True, color)
+    score_text_surface = high_score_font.render(text, True, color)
     # Get text rectangle and center it in hs_rect
     score_text_rect = score_text_surface.get_rect(center=(width // 2, height // 2))
     # Blit the text onto the transparent surface

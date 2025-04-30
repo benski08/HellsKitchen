@@ -88,13 +88,25 @@ SCORE_NUM_Y = HEIGHT - SCORE_NUM_HEIGHT // 2 - 370
 HS_TEXT_WIDTH = 350
 HS_TEXT_HEIGHT = 200
 HS_TEXT_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
-HS_TEXT_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 350
+HS_TEXT_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 150
 
 # HIGHSCORENUMBER
 HS_NUM_WIDTH = 350
 HS_NUM_HEIGHT = 200
 HS_NUM_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
-HS_NUM_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 300
+HS_NUM_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 100
+
+# SCORETEXT
+S_TEXT_WIDTH = 350
+S_TEXT_HEIGHT = 200
+S_TEXT_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
+S_TEXT_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 350
+
+# SCORENUMBER
+S_NUM_WIDTH = 350
+S_NUM_HEIGHT = 200
+S_NUM_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
+S_NUM_Y = (HEIGHT - HS_NUM_HEIGHT // 2) - 300
 
 #keystroke definitions
 key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
@@ -144,8 +156,10 @@ def gameOver(score):
         screen.blit(game_over_bg, (0, 0))
         pygame.draw.rect(screen, GRAY, play_again_rect)
         screen.blit(pa_text_surface, pa_text_rect)
-        highScoreText(screen, HS_TEXT_X, HS_TEXT_Y, HS_TEXT_WIDTH, HS_TEXT_HEIGHT, WHITE)
-        highScoreNum(high_score, screen, HS_NUM_X, HS_NUM_Y, HS_NUM_WIDTH, HS_NUM_HEIGHT, WHITE)
+        highScoreText("HIGHSCORE: ", screen, HS_TEXT_X, HS_TEXT_Y, HS_TEXT_WIDTH, HS_TEXT_HEIGHT, BLACK)
+        highScoreNum(high_score, screen, HS_NUM_X, HS_NUM_Y, HS_NUM_WIDTH, HS_NUM_HEIGHT, BLACK)
+        highScoreText("SCORE:", screen, S_TEXT_X, S_TEXT_Y, S_TEXT_WIDTH, S_TEXT_HEIGHT, WHITE)
+        highScoreNum(int(round(score, 0)), screen, S_NUM_X, S_NUM_Y, S_NUM_WIDTH, S_NUM_HEIGHT, WHITE)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
