@@ -4,8 +4,7 @@ from Functions import *
 
 
 class Task:
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
-        self.blast_old_pbar = blast_old_pbar
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
         self.font = info_font
         self.screen = screen
         self.used_list = used_list
@@ -58,14 +57,11 @@ class Task:
     def interact(self, game_bg):
         self.progress = 0
         self.randomKey(self.key)
-        if self.blast_old_pbar == True:
-            self.screen.blit(game_bg, (0,0))
-            self.blast_old_pbar = False
 
 class CooPot(Task):
     import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
-        super().__init__(progress, key, screen, key_list, used_list, info_font, blast_old_pbar)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
         self.toggle_lid = True
         self.frame_counter = 0
         self.MAXTIME = 5
@@ -106,15 +102,15 @@ class CooPot(Task):
         return self.progress
 class Dishes(Task):
     import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, blast_old_pbar):
-        super().__init__(progress, key, screen, key_list, used_list, info_font, blast_old_pbar)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
         self.pbarMAXHEIGHT = 80
         self.pbarWIDTH = 10
         self.pbary = (self.HEIGHT - self.pbarMAXHEIGHT)//2
         self.pbarx = (self.WIDTH - self.pbarWIDTH)//2
         self.MAXTIME = 5
 
-    def update_progress(self, difficulty):
+    def updateProgress(self, difficulty):
         self.progress += 100/(self.MAXTIME*30) * difficulty
         return self.progress
 
@@ -142,6 +138,20 @@ class Dishes(Task):
         return
     pass
 
-    class Kettle():
-        def SoundStart(self, kettle):
-            kettle.play()
+class Kettle(Task):
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
+        if not pygame.mixer.Channel(7).get_busy():
+            pygame.mixer.Channel(7).set_endevent(pygame.USEREVENT + 1)
+        self.kettle_done = False
+        self.MAXTIME = 41
+        self.FRAMERATE = FRAMERATE
+    def resetSound(self, kettle):
+        pygame.mixer.Channel(7).stop()
+        pygame.mixer.Channel(7).play(kettle)
+
+    def updateProgress(self):
+        self.progress += 100 / (self.MAXTIME * self.FRAMERATE)
+
+
+

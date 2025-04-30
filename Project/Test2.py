@@ -1,120 +1,220 @@
-import pygame
+#imports
+from pygame import MOUSEBUTTONDOWN, K_ESCAPE
 from Functions import *
-class Task:
-    def __init__(self, progress, key, screen, key_list, used_list, info_font):
-        self.font = info_font
-        self.screen = screen
-        self.used_list = used_list
-        self.key_list = key_list
-        self.HEIGHT = screen.get_height()
-        self.WIDTH = screen.get_width()
-        self.progress = progress
-        self.key = key
-        self.BLACK = (0,0,0)
-        return
-    def randomKey(self, previous_letter):
-        import random
-        n = 0
-        for item in self.used_list:
-            if item == previous_letter:
-                self.used_list.pop(n)
-                n += 1
-        index = random.randint(0, 25)
-        self.key = self.key_list[index]
-        self.used_list.append(self.key)
-        return self.key, self.used_list
-    def calculateScore(self):
-        self.MINSCORE = 0
-        self.MAXSCORE = 100
-        self.score = (self.MAXSCORE/100) * self.progress
-        return self.score
+import time, random, sys, pygame, math
+from Tasks import *
+print("Imports Successful!")
 
-    def controlInfo(self, side_length, x, y, image, image_width, image_height, alpha=0):
-        self.side_length = side_length
-        self.surface = self.font.render(self.key[2], True, (0,0,0))  # Render text
+#config
+pygame.init()
+pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN])
 
-        # Create a transparent surface with per-pixel alpha
-        transparent_surface = pygame.Surface((side_length, side_length), pygame.SRCALPHA)
-        transparent_surface.fill((255, 255, 255, alpha))  # Set transparency
+#assets
+screen = pygame.display.set_mode((900, 600))
+pygame.display.set_caption('Hell´s Kitchen')
+title_bg = pygame.image.load("assets/title_bg2.png").convert()
+game_over_bg = pygame.image.load("assets/endscreen.png").convert()
+game_bg = pygame.image.load("assets/game_bg.png").convert()
+game_bg_rendered = False
+cookingpot_lid_right = pygame.image.load("assets/cookingpot_lid_right.png").convert_alpha()
+cookingpot_lid_left = pygame.image.load("assets/cookingpot_lid_left.png").convert_alpha()
+plate = pygame.image.load("assets/plate.png").convert_alpha()
+game_icon = pygame.image.load("assets/gordon.png").convert_alpha()
+key_bg = pygame.image.load("assets/key_fixed-removebg-preview.png").convert_alpha()
+pygame.display.set_icon(game_icon)
+kettle = pygame.mixer.Sound("assets/Whistling Kettle.mp3")
+bg_music = pygame.mixer.Sound("assets/bgmusic.mp3")
 
-        # Center the text on the transparent surface
-        text_rect = self.surface.get_rect(center=(side_length // 2, side_length // 2))
-        transparent_surface.blit(self.surface, text_rect)  # Blit text onto transparent surface
+start_game = False
+game_over = False
+running = True
 
-        # Blit the image first
-        self.screen.blit(image, (x-image_width/2 + 12, y - image_height/2 + 12))  # Use x, y for positioning the image
+GRAY = (180,180,180)
+BLACK = (0,0,0)
+GREEN = (0, 255, 0)
+WHITE = (255,255,255)
+WIDTH = screen.get_width()
+HEIGHT = screen.get_height()
+FRAMERATE = 15
+MIN_DIFFICULTY = 0.5
+MAX_DIFFICULTY = 2
+DIFF_SCALING = 0.5
+refresh_rects = []
+clock = pygame.time.Clock()
 
-        # Then blit the transparent surface with text on top
-        self.screen.blit(transparent_surface, (x, y-2))
+INFOKEY_WIDTH = 75
+INFOKEY_HEIGHT = int(INFOKEY_WIDTH / 1.776)
+#resize if necessary
+key_bg = pygame.transform.scale(key_bg, (INFOKEY_WIDTH, INFOKEY_HEIGHT))
+title_bg = pygame.transform.scale(title_bg, (WIDTH, HEIGHT))
+game_over_bg = pygame.transform.scale(game_over_bg, (WIDTH,HEIGHT))
 
-        # Finally, re-blit the text to ensure it's on top
-        self.screen.blit(self.surface, (x + (side_length - text_rect.width) // 2,
-                                        y + (side_length - text_rect.height) // 2 - 2))
+#Menubutton
+menu_font = pygame.font.SysFont('Comic Sans MS', 40)
+menu_button_width, menu_button_height = 200, 80
+menu_button_x, menu_button_y = (WIDTH - menu_button_width) // 2, (HEIGHT - menu_button_height) // 2 + 200
+button_rect = pygame.Rect(menu_button_x, menu_button_y, menu_button_width, menu_button_height)
+text_surface = menu_font.render("START", True, BLACK)
+text_rect = text_surface.get_rect(center=button_rect.center)
 
-    def interact(self):
-        self.progress = 0
-        self.randomKey(self.key)
+# SCORETEXT
+SCORE_TEXT_WIDTH = 150
+SCORE_TEXT_HEIGHT = 30
+SCORE_TEXT_X = WIDTH - SCORE_TEXT_WIDTH // 2 - 95
+SCORE_TEXT_Y = HEIGHT - SCORE_TEXT_HEIGHT // 2 - 400
 
-class CooPot(Task):
-    import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font):
-        super().__init__(progress, key, screen, key_list, used_list, info_font)
-        self.toggle_lid = True
-        self.frame_counter = 0
-        self.MAXTIME = 5
-        self.pbarMAXWIDTH = 80
-        self.pbarHEIGHT = 10
-        self.pbarx = (self.screen.get_width() - self.pbarMAXWIDTH) // 2 + 241
-        self.pbary = (self.screen.get_height() - 70)// 2 - 37
-        self.rlid_x = (self.screen.get_width() - 80) // 2 + 195
-        self.rlid_y = (self.screen.get_height() - 70) // 2
-        self.llid_x = (self.screen.get_width() - 80) // 2 + 195
-        self.llid_y = (self.screen.get_height() - 61) // 2 - 10
-    def animate(self, state_1, state_2):
-        #pot lid animation
-        self.state_1 = state_1
-        self.state_2  = state_2
-        self.min_frames = 1 #in frames
-        self.max_frames = 10 #in frames
-        self.switch_rate = int(self.max_frames - (self.progress / 100) * (self.max_frames - self.min_frames)) #calculate switchrate based on progress
-        if self.state_1 is None or self.state_2 is None:
-            print("Error: Images not loaded properly")
-        if self.frame_counter >= self.switch_rate: #if the framecounter is high enough, it will switch states of lid
-            self.toggle_lid = not self.toggle_lid
-            self.frame_counter = 0
-        if self.toggle_lid == True:
-            self.screen.blit(self.state_2, (self.rlid_x, self.rlid_y))
-        else:
-            self.screen.blit(self.state_1, (self.llid_x, self.llid_y))
-        self.frame_counter += 1
-        self.pygame.display.update()
-        #score
-    def pBarUpdate(self, difficulty):
-        self.difficulty = difficulty
-        self.pbarWIDTH = int(self.pbarMAXWIDTH/100 * self.progress)
-        self.XDISPLACEMENT = self.pbarWIDTH/2
-        self.p_bar_rect = pygame.Rect(self.pbarx - self.XDISPLACEMENT,self.pbary, self.pbarWIDTH, self.pbarHEIGHT)
-        self.COLOR = (int(self.progress/100 * 255), int((1-self.progress/100)*255),0)
-        pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
-        self.progress += 100/(self.MAXTIME*30) * self.difficulty
-        return self.progress
-class Dishes(Task):
-    import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font):
-        super().__init__(progress, key, screen, key_list, used_list, info_font)
-        self.pbarMAXHEIGHT = 80
-        self.pbarWIDTH = 10
-        self.pbary = (self.HEIGHT - self.pbarMAXHEIGHT)//2
-        self.pbarx = (self.WIDTH - self.pbarWIDTH)//2
-        self.MAXTIME = 5
-    def pBarUpdate(self, difficulty):
-        self.difficulty = difficulty
-        self.pbarHEIGHT = int(self.pbarMAXHEIGHT/100 * self.progress)
-        self.YDISPLACEMENT = self.pbarHEIGHT/2
-        self.p_bar_rect = pygame.Rect(self.pbarx, self.pbary - self.YDISPLACEMENT, self.pbarWIDTH, self.pbarHEIGHT)
-        self.COLOR = (int((self.progress/100 * 255)), int((1-self.progress/100)*255),0)
-        pygame.draw.rect(self.screen, self.COLOR, self.p_bar_rect)
-        self.progress += 100/(self.MAXTIME*30) * self.difficulty
+# SCORENUMBER
+SCORE_NUM_WIDTH = 150
+SCORE_NUM_HEIGHT = 30
+SCORE_NUM_X = WIDTH - SCORE_NUM_WIDTH // 2 - 95
+SCORE_NUM_Y = HEIGHT - SCORE_NUM_HEIGHT // 2 - 370
 
-        return self.progress
-    pass
+# HIGHSCORETEXT
+HS_TEXT_WIDTH = 350
+HS_TEXT_HEIGHT = 200
+HS_TEXT_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
+HS_TEXT_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 350
+
+# HIGHSCORENUMBER
+HS_NUM_WIDTH = 350
+HS_NUM_HEIGHT = 200
+HS_NUM_X = (WIDTH - HS_TEXT_WIDTH // 2) - 450
+HS_NUM_Y = (HEIGHT - HS_TEXT_HEIGHT // 2) - 300
+
+#keystroke definitions
+key_list = ["K_a", "K_b", "K_c", "K_d","K_e", "K_f", "K_g", "K_h","K_i", "K_j", "K_k", "K_l", "K_m", "K_n", "K_o", "K_p", "K_q", "K_r","K_s","K_t", "K_u","K_v","K_w", "K_x", "K_y", "K_z"]
+used_list = ["K_a","K_a","K_a"]
+
+#initialize cooking_pot
+info_font = pygame.font.SysFont("Comic Sans MS", 28, bold=True)
+cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
+Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
+#cooking pot button
+SIDELENGTH = 25
+CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 12
+
+#initialize dishes
+Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
+
+
+
+
+# Play Again Button
+play_again_font = pygame.font.SysFont('Comic Sans MS', 35)
+pa_button_width, pa_button_height = 200, 80
+pa_button_x, pa_button_y = (WIDTH - pa_button_width) // 2, (HEIGHT - pa_button_height) // 2 - 200
+play_again_rect = pygame.Rect(pa_button_x, pa_button_y, pa_button_width, pa_button_height)
+pa_text_surface = play_again_font.render("PLAY AGAIN?", True, BLACK)
+pa_text_rect = pa_text_surface.get_rect(center=play_again_rect.center)
+
+
+def gameOver(score):
+    global running
+    global start_game
+    global game_over
+    game_over = True
+    start_game = False
+    Cooking_pot.progress = 0
+    Dishes.progress = 0
+    pygame.mixer.music.stop()
+    #update high score
+    if score > readHighScore():
+        writeHighScore(score)
+    high_score = readHighScore()
+    while game_over == True:
+        screen.blit(game_over_bg, (0, 0))
+        pygame.draw.rect(screen, GRAY, play_again_rect)
+        screen.blit(pa_text_surface, pa_text_rect)
+        highScoreText(screen, HS_TEXT_X, HS_TEXT_Y, HS_TEXT_WIDTH, HS_TEXT_HEIGHT, WHITE)
+        highScoreNum(high_score, screen, HS_NUM_X, HS_NUM_Y, HS_NUM_WIDTH, HS_NUM_HEIGHT, WHITE)
+        pygame.display.flip()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                return
+            elif event.type == pygame.KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if play_again_rect.collidepoint(event.pos):
+                    game_over = False
+                    print("Hello")
+            else:
+                pass
+    return
+
+#game loop
+while running:
+    score = 0
+    prev_score = 0
+    screen.blit(title_bg, (0, 0))
+    pygame.draw.rect(screen, GRAY, button_rect)
+    screen.blit(text_surface, text_rect)
+    pygame.display.flip()
+    Cooking_pot.interact(game_bg)
+    Dishes.interact(game_bg)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if button_rect.collidepoint(event.pos):
+                #game start
+                screen.blit(game_bg, (0, 0))
+                game_bg_rendered = True
+                start_game = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == K_ESCAPE:
+                running = False
+
+    while start_game: #once start button is pressed
+        game_over = False
+        #calculate difficulty
+        difficulty_multiplier = calculateDifficulty(score, MIN_DIFFICULTY, MAX_DIFFICULTY, DIFF_SCALING)
+        if game_bg_rendered:
+            screen.blit(game_bg, (0, 0))
+            game_bg_rendered = True
+        # render score
+        scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
+        scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
+        # render buttons
+        CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Dishes.controlInfo(SIDELENGTH, 450, 275, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        # update Tasks
+        # update Cookingpot
+        Cooking_pot.pBarUpdate(difficulty_multiplier)
+        Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
+        # update Dishes
+        #Dishes.pBarUpdate(difficulty_multiplier)
+        Dishes.animate(plate)
+        Dishes.update_progress(difficulty_multiplier)
+        #refresh_rects = [Cooking_pot.p_bar_rect]
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                start_game = False
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_ESCAPE:
+                    start_game = False
+                    running = False
+                if event.key == getattr(pygame, Cooking_pot.key):
+                    print("Cooking pot")
+                    score += Cooking_pot.calculateScore()
+                    Cooking_pot.interact(game_bg)
+                if event.key == getattr(pygame, Dishes.key):
+                    print("Dishes")
+                    score += Dishes.calculateScore()
+                    Dishes.interact(game_bg)
+        #check if progress over 100
+        if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
+            game_over = True
+            gameOver(score)
+
+        elif not pygame.mixer.music.get_busy() and not game_over:
+            pygame.mixer.music.load("assets/bgmusic.mp3")
+            pygame.mixer.music.play()
+        #pygame.display.update(refresh_rects)
+        pygame.display.update()
+        clock.tick(FRAMERATE)
+
+pygame.quit()
