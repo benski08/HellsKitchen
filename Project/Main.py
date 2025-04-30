@@ -19,6 +19,13 @@ game_bg_rendered = False
 cookingpot_lid_right = pygame.image.load("assets/cookingpot_lid_right.png").convert_alpha()
 cookingpot_lid_left = pygame.image.load("assets/cookingpot_lid_left.png").convert_alpha()
 plate = pygame.image.load("assets/plate.png").convert_alpha()
+#trashcan progressbar
+can0 = pygame.image.load("assets/0_can_detailed.png").convert_alpha()
+can20 = pygame.image.load("assets/20_can_detailed.png").convert_alpha()
+can40 = pygame.image.load("assets/40_can_detailed.png").convert_alpha()
+can60 = pygame.image.load("assets/60_can_detailed.png").convert_alpha()
+can80 = pygame.image.load("assets/80_can_detailed.png").convert_alpha()
+can100 = pygame.image.load("assets/100_can_detailed.png").convert_alpha()
 game_icon = pygame.image.load("assets/gordon.png").convert_alpha()
 key_bg = pygame.image.load("assets/key_fixed-removebg-preview.png").convert_alpha()
 pygame.display.set_icon(game_icon)
@@ -45,10 +52,17 @@ clock = pygame.time.Clock()
 
 INFOKEY_WIDTH = 75
 INFOKEY_HEIGHT = int(INFOKEY_WIDTH / 1.776)
+fullness_bar_WIDTH, fullness_bar_HEIGHT = 30, 60
 #resize if necessary
 key_bg = pygame.transform.scale(key_bg, (INFOKEY_WIDTH, INFOKEY_HEIGHT))
 title_bg = pygame.transform.scale(title_bg, (WIDTH, HEIGHT))
 game_over_bg = pygame.transform.scale(game_over_bg, (WIDTH,HEIGHT))
+can0 = pygame.transform.scale(can0, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
+can20 = pygame.transform.scale(can20, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
+can40 = pygame.transform.scale(can40, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
+can60 = pygame.transform.scale(can60, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
+can80 = pygame.transform.scale(can80, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
+can100 = pygame.transform.scale(can100, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
 
 #Menubutton
 menu_font = pygame.font.SysFont('Comic Sans MS', 40)
@@ -89,20 +103,20 @@ used_list = ["K_a","K_a","K_a"]
 #initialize cooking_pot
 info_font = pygame.font.SysFont("Comic Sans MS", 28, bold=True)
 cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
-Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, 30)
+Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
 #cooking pot button
 SIDELENGTH = 25
 CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 12
 print(CP_info_button_y, CP_info_button_x)
 #initialize dishes
-Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, 30)
+Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
 
 #initialize kettle
-Kettle = Kettle(0, "K_a", screen, key_list, used_list, info_font, 30)
+Kettle = Kettle(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
 
-
-
-
+#intialize trashcan
+Trashcan = Trashcan(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
+fullness_bar_x, fullness_bar_y = 45, 280
 # Play Again Button
 play_again_font = pygame.font.SysFont('Comic Sans MS', 35)
 pa_button_width, pa_button_height = 200, 80
@@ -162,6 +176,7 @@ while running:
     Dishes.interact(game_bg)
     Kettle.interact(game_bg)
     Kettle.resetSound(kettle_sound)
+    Trashcan.interact(game_bg)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -186,8 +201,9 @@ while running:
         scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
         # render buttons
         CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
-        Dishes.controlInfo(SIDELENGTH, 450, 275, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Dishes.controlInfo(SIDELENGTH, 540, 240, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         Kettle.controlInfo(SIDELENGTH, 692, 240, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Trashcan.controlInfo(SIDELENGTH, 49, 240, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         # update Tasks
         # update Cookingpot
         Cooking_pot.pBarUpdate(difficulty_multiplier)
@@ -198,6 +214,9 @@ while running:
         Dishes.updateProgress(difficulty_multiplier)
         # update Kettle
         Kettle.updateProgress()
+        #update trashcan
+        Trashcan.updateProgress(difficulty_multiplier)
+        Trashcan.pBarUpdate(fullness_bar_x, fullness_bar_y, can0, can20, can40, can60, can80, can100)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
@@ -219,6 +238,10 @@ while running:
                     score += Kettle.calculateScore()
                     Kettle.resetSound(kettle_sound)
                     Kettle.interact(game_bg)
+                if event.key == getattr(pygame, Trashcan.key):
+                    print("Trashcan")
+                    score += Trashcan.calculateScore()
+                    Trashcan.interact(game_bg)
         #check if gameover criteria are met
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100 or Kettle.progress >= 100:
             pygame.mixer.Channel(7).stop()
@@ -228,7 +251,7 @@ while running:
         elif not pygame.mixer.music.get_busy() and not game_over:
             pygame.mixer.music.load("assets/bgmusic.mp3")
             pygame.mixer.music.play()
-
+        print(Cooking_pot.progress, Dishes.progress, Kettle.progress, Trashcan.progress)
         pygame.display.update()
         clock.tick(FRAMERATE)
 

@@ -147,8 +147,6 @@ class Dishes(Task):
 class Kettle(Task):
     def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
         super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
-        if not pygame.mixer.Channel(7).get_busy():
-            pygame.mixer.Channel(7).set_endevent(pygame.USEREVENT + 1)
         self.kettle_done = False
         self.MAXTIME = 41
         self.FRAMERATE = FRAMERATE
@@ -158,6 +156,26 @@ class Kettle(Task):
 
     def updateProgress(self):
         self.progress += 100 / (self.MAXTIME * self.FRAMERATE)
+class Trashcan(Task):
+        def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
+            super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
+            self.MAXTIME = 10
+            self.FRAMERATE = FRAMERATE
+        def updateProgress(self, difficulty):
+            self.progress += 100 / (self.MAXTIME * self.FRAMERATE) * difficulty
+            return self.progress
 
-
+        def pBarUpdate(self, x, y, can0, can20, can40, can60, can80, can100):
+            if self.progress < 15:
+                self.screen.blit(can0, (x,y))
+            elif self.progress >= 15 and self.progress < 35:
+                self.screen.blit(can20, (x,y))
+            elif self.progress >= 35 and self.progress < 55:
+                self.screen.blit(can40, (x, y))
+            elif self.progress >= 55 and self.progress < 75:
+                self.screen.blit(can60, (x,y))
+            elif self.progress >= 75 and self.progress < 95:
+                self.screen.blit(can80, (x,y))
+            elif self.progress >= 95:
+                self.screen.blit(can100, (x,y))
 
