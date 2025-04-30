@@ -17,13 +17,19 @@ class Task:
         return
     def randomKey(self, previous_letter):
         import random
-        n = 0
+        loop = True
+        while loop:
+            loop = False
+            index = random.randint(0, 25)
+            self.key = self.key_list[index]
+            for item in self.used_list:
+                if self.key == item:
+                    loop = True
+        n=0
         for item in self.used_list:
             if item == previous_letter:
                 self.used_list.pop(n)
                 n += 1
-        index = random.randint(0, 25)
-        self.key = self.key_list[index]
         self.used_list.append(self.key)
         return self.key, self.used_list
     def calculateScore(self):
