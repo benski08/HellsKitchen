@@ -22,6 +22,8 @@ game_icon = pygame.image.load("assets/gordon.png").convert_alpha()
 key_bg = pygame.image.load("assets/key_fixed-removebg-preview.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 kettle = pygame.mixer.Sound("assets/Whistling Kettle.mp3")
+#bg_music = pygame.mixer.Sound("assets/bgmusic.mp3")
+explosion = pygame.mixer.Sound("assets/explosion.mp3")
 
 start_game = False
 game_over = False
@@ -92,9 +94,6 @@ CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking
 #initialize dishes
 Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
 
-#initialize test
-FakePot1 = CooPot(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
-FakePot2 = CooPot(0, "K_a", screen, key_list, used_list, info_font, game_bg_rendered)
 
 
 
@@ -115,6 +114,8 @@ def gameOver(score):
     start_game = False
     Cooking_pot.progress = 0
     Dishes.progress = 0
+    pygame.mixer.music.stop()
+    explosion.play()
     #update high score
     if score > readHighScore():
         writeHighScore(score)
@@ -167,30 +168,27 @@ while running:
                 running = False
 
     while start_game: #once start button is pressed
+        game_over = False
         #calculate difficulty
-        if Cooking_pot.blast_old_pbar or Dishes.blast_old_pbar == True:
-            pass
-        print(game_bg_rendered)
         difficulty_multiplier = calculateDifficulty(score, MIN_DIFFICULTY, MAX_DIFFICULTY, DIFF_SCALING)
         if game_bg_rendered:
             screen.blit(game_bg, (0, 0))
             game_bg_rendered = True
-            pygame.display.update()
         # render score
         scoreRenderText(screen, SCORE_TEXT_X, SCORE_TEXT_Y, SCORE_TEXT_WIDTH, SCORE_TEXT_HEIGHT, WHITE)
         scoreRenderNum(screen, score, SCORE_NUM_X, SCORE_NUM_Y, SCORE_NUM_WIDTH, SCORE_NUM_HEIGHT, WHITE)
         # render buttons
         CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
-        Dishes.controlInfo(SIDELENGTH, 450, 300, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Dishes.controlInfo(SIDELENGTH, 450, 275, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         # update Tasks
-        FakePot1.pBarUpdate(difficulty_multiplier)
-        FakePot2.pBarUpdate(difficulty_multiplier)
         # update Cookingpot
         Cooking_pot.pBarUpdate(difficulty_multiplier)
         Cooking_pot.animate(cookingpot_lid_left, cookingpot_lid_right)
         # update Dishes
-        Dishes.pBarUpdate(difficulty_multiplier)
-        refresh_rects = [Cooking_pot.p_bar_rect, Dishes.p_bar_rect]
+        #Dishes.pBarUpdate(difficulty_multiplier)
+        Dishes.animate(plate)
+        Dishes.update_progress(difficulty_multiplier)
+        #refresh_rects = [Cooking_pot.p_bar_rect]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 start_game = False
@@ -210,11 +208,14 @@ while running:
                     Dishes.interact(game_bg)
 
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
+            game_over = True
             gameOver(score)
-            pygame.mixer.music.stop()
-        else:
-            clock.tick(FRAMERATE)
-        pygame.display.update(refresh_rects)
-        if not pygame.mixer.get_busy():
-            bg_music.play(1)
+
+        elif not pygame.mixer.music.get_busy() and not game_over:
+            pygame.mixer.music.load("assets/bgmusic.mp3")
+            pygame.mixer.music.play()
+        #pygame.display.update(refresh_rects)
+        pygame.display.update()
+        clock.tick(FRAMERATE)
+
 pygame.quit()
