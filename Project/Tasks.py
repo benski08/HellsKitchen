@@ -4,7 +4,7 @@ from Functions import *
 
 
 class Task:
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound):
         self.font = info_font
         self.screen = screen
         self.used_list = used_list
@@ -14,6 +14,7 @@ class Task:
         self.progress = progress
         self.key = key
         self.BLACK = (0,0,0)
+        self.interact_sound = interact_sound
         return
     def randomKey(self, previous_letter):
         import random
@@ -63,11 +64,12 @@ class Task:
     def interact(self, game_bg):
         self.progress = 0
         self.randomKey(self.key)
+        pygame.mixer.Channel(6).play(self.interact_sound)
 
 class CooPot(Task):
     import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
-        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
         self.toggle_lid = True
         self.frame_counter = 0
         self.MAXTIME = 5
@@ -108,8 +110,8 @@ class CooPot(Task):
         return self.progress
 class Dishes(Task):
     import pygame
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
-        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
         self.pbarMAXHEIGHT = 80
         self.pbarWIDTH = 10
         self.pbary = (self.HEIGHT - self.pbarMAXHEIGHT)//2
@@ -145,8 +147,8 @@ class Dishes(Task):
     pass
 
 class Kettle(Task):
-    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
-        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
+    def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound):
+        super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
         self.kettle_done = False
         self.MAXTIME = 41
         self.FRAMERATE = FRAMERATE
@@ -157,8 +159,8 @@ class Kettle(Task):
     def updateProgress(self):
         self.progress += 100 / (self.MAXTIME * self.FRAMERATE)
 class Trashcan(Task):
-        def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE):
-            super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE)
+        def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound):
+            super().__init__(progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
             self.MAXTIME = 10
             self.FRAMERATE = FRAMERATE
         def updateProgress(self, difficulty):

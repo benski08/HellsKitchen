@@ -32,6 +32,7 @@ pygame.display.set_icon(game_icon)
 kettle_sound = pygame.mixer.Sound("assets/Whistling Kettle.mp3")
 bg_music = pygame.mixer.Sound("assets/bgmusic.mp3")
 explosion = pygame.mixer.Sound("assets/explosion.mp3")
+interact_sound = pygame.mixer.Sound("assets/trash.mp3")
 
 start_game = False
 game_over = False
@@ -41,6 +42,9 @@ GRAY = (180,180,180)
 BLACK = (0,0,0)
 GREEN = (0, 255, 0)
 WHITE = (255,255,255)
+PASTEL = (197, 134, 84)
+RED = (255,0,0)
+
 WIDTH = screen.get_width()
 HEIGHT = screen.get_height()
 FRAMERATE = 15
@@ -65,9 +69,9 @@ can80 = pygame.transform.scale(can80, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
 can100 = pygame.transform.scale(can100, (fullness_bar_WIDTH, fullness_bar_HEIGHT))
 
 #Menubutton
-menu_font = pygame.font.SysFont('Comic Sans MS', 40)
+menu_font = pygame.font.SysFont('Comic Sans MS', 40, bold=True)
 menu_button_width, menu_button_height = 200, 80
-menu_button_x, menu_button_y = (WIDTH - menu_button_width) // 2, (HEIGHT - menu_button_height) // 2 + 200
+menu_button_x, menu_button_y = (WIDTH - menu_button_width) // 2, (HEIGHT - menu_button_height) // 2 + 215
 button_rect = pygame.Rect(menu_button_x, menu_button_y, menu_button_width, menu_button_height)
 text_surface = menu_font.render("START", True, BLACK)
 text_rect = text_surface.get_rect(center=button_rect.center)
@@ -115,23 +119,23 @@ used_list = ["K_a","K_a","K_a"]
 #initialize cooking_pot
 info_font = pygame.font.SysFont("Comic Sans MS", 28, bold=True)
 cooking_pot_x, cooking_pot_y = (WIDTH - 50) // 2 + 250, (HEIGHT - 40) // 2
-Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
+Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
 #cooking pot button
 SIDELENGTH = 25
 CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 12
 print(CP_info_button_y, CP_info_button_x)
 #initialize dishes
-Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
+Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
 
 #initialize kettle
-Kettle = Kettle(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
+Kettle = Kettle(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
 
 #intialize trashcan
-Trashcan = Trashcan(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE)
-fullness_bar_x, fullness_bar_y = 45, 280
+Trashcan = Trashcan(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
+fullness_bar_x, fullness_bar_y = 45, 385
 # Play Again Button
 play_again_font = pygame.font.SysFont('Comic Sans MS', 35)
-pa_button_width, pa_button_height = 200, 80
+pa_button_width, pa_button_height = 300, 80
 pa_button_x, pa_button_y = (WIDTH - pa_button_width) // 2, (HEIGHT - pa_button_height) // 2 - 200
 play_again_rect = pygame.Rect(pa_button_x, pa_button_y, pa_button_width, pa_button_height)
 pa_text_surface = play_again_font.render("PLAY AGAIN?", True, BLACK)
@@ -154,7 +158,7 @@ def gameOver(score):
     high_score = readHighScore()
     while game_over == True:
         screen.blit(game_over_bg, (0, 0))
-        pygame.draw.rect(screen, GRAY, play_again_rect)
+        pygame.draw.rect(screen, RED, play_again_rect)
         screen.blit(pa_text_surface, pa_text_rect)
         highScoreText("HIGHSCORE: ", screen, HS_TEXT_X, HS_TEXT_Y, HS_TEXT_WIDTH, HS_TEXT_HEIGHT, BLACK)
         highScoreNum(high_score, screen, HS_NUM_X, HS_NUM_Y, HS_NUM_WIDTH, HS_NUM_HEIGHT, BLACK)
@@ -182,7 +186,7 @@ while running:
     score = 0
     prev_score = 0
     screen.blit(title_bg, (0, 0))
-    pygame.draw.rect(screen, GRAY, button_rect)
+    pygame.draw.rect(screen, PASTEL , button_rect)
     screen.blit(text_surface, text_rect)
     pygame.display.flip()
     #initialize randomkeys
@@ -217,7 +221,7 @@ while running:
         CooPot.controlInfo(Cooking_pot, SIDELENGTH, CP_info_button_x, CP_info_button_y, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         Dishes.controlInfo(SIDELENGTH, 540, 240, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         Kettle.controlInfo(SIDELENGTH, 692, 240, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
-        Trashcan.controlInfo(SIDELENGTH, 49, 240, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
+        Trashcan.controlInfo(SIDELENGTH, 49, 480, key_bg, INFOKEY_WIDTH, INFOKEY_HEIGHT)
         # update Tasks
         # update Cookingpot
         Cooking_pot.pBarUpdate(difficulty_multiplier)
