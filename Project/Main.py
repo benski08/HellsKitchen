@@ -24,6 +24,7 @@ key_bg = pygame.image.load("assets/key_fixed-removebg-preview.png").convert_alph
 pygame.display.set_icon(game_icon)
 kettle_sound = pygame.mixer.Sound("assets/Whistling Kettle.mp3")
 bg_music = pygame.mixer.Sound("assets/bgmusic.mp3")
+explosion = pygame.mixer.Sound("assets/explosion.mp3")
 
 start_game = False
 game_over = False
@@ -120,6 +121,7 @@ def gameOver(score):
     Cooking_pot.progress = 0
     Dishes.progress = 0
     pygame.mixer.music.stop()
+    explosion.play()
     #update high score
     if score > readHighScore():
         writeHighScore(score)
