@@ -172,7 +172,6 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == K_ESCAPE:
                 running = False
-
     while start_game: #once start button is pressed
         game_over = False
         #calculate difficulty
