@@ -113,6 +113,7 @@ def gameOver(score):
     start_game = False
     Cooking_pot.progress = 0
     Dishes.progress = 0
+    pygame.mixer.music.stop()
     #update high score
     if score > readHighScore():
         writeHighScore(score)
@@ -165,6 +166,7 @@ while running:
                 running = False
 
     while start_game: #once start button is pressed
+        game_over = False
         #calculate difficulty
         difficulty_multiplier = calculateDifficulty(score, MIN_DIFFICULTY, MAX_DIFFICULTY, DIFF_SCALING)
         if game_bg_rendered:
@@ -204,11 +206,14 @@ while running:
                     Dishes.interact(game_bg)
 
         if Cooking_pot.progress >= 100 or Dishes.progress >= 100:
+            game_over = True
             gameOver(score)
+
+        elif not pygame.mixer.music.get_busy() and not game_over:
+            pygame.mixer.music.load("assets/bgmusic.mp3")
+            pygame.mixer.music.play()
         #pygame.display.update(refresh_rects)
         pygame.display.update()
         clock.tick(FRAMERATE)
-        if not pygame.mixer.get_busy():
-            bg_music.play(1)
 
 pygame.quit()
