@@ -2,7 +2,7 @@ import pygame
 from Functions import *
 
 
-
+#eigene klasse
 class Task:
     def __init__(self, progress, key, screen, key_list, used_list, info_font, FRAMERATE, interact_sound):
         self.font = info_font
@@ -38,7 +38,7 @@ class Task:
         self.MAXSCORE = 100
         self.score = (self.MAXSCORE/100) * self.progress
         return self.score
-
+    #ChatGPT hat die alpha blitting Funktion gemacht
     def controlInfo(self, side_length, x, y, image, image_width, image_height, alpha=0):
         self.side_length = side_length
         self.surface = self.font.render(self.key[2], True, (0,0,0))  # Render text

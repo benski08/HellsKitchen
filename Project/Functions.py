@@ -3,7 +3,7 @@ import random, pygame, math
 pygame.init()
 score_font = pygame.font.SysFont("Comic Sans MS", 20, bold=True)
 high_score_font = pygame.font.SysFont("Comic Sans MS", 50, bold=True)
-
+#Chatgpt hat die Render-Funktionen gemacht.
 def scoreRenderText(screen, x, y, width, height, color, alpha=0):
     # Create transparent surface
     transparent_surface = pygame.Surface((width, height), pygame.SRCALPHA)

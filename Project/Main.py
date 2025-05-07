@@ -8,7 +8,7 @@ print("Imports Successful!")
 #config
 pygame.init()
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN])
-
+clock = pygame.time.Clock()
 #assets
 screen = pygame.display.set_mode((900, 600))
 pygame.display.set_caption('Hell´s Kitchen')
@@ -30,9 +30,8 @@ game_icon = pygame.image.load("assets/gordon.png").convert_alpha()
 key_bg = pygame.image.load("assets/key_fixed-removebg-preview.png").convert_alpha()
 pygame.display.set_icon(game_icon)
 kettle_sound = pygame.mixer.Sound("assets/Whistling Kettle.mp3")
-bg_music = pygame.mixer.Sound("assets/bgmusic.mp3")
 explosion = pygame.mixer.Sound("assets/explosion.mp3")
-interact_sound = pygame.mixer.Sound("assets/trash.mp3")
+interact_sound = pygame.mixer.Sound("assets/interact.mp3")
 
 start_game = False
 game_over = False
@@ -51,8 +50,6 @@ FRAMERATE = 15
 MIN_DIFFICULTY = 0.5
 MAX_DIFFICULTY = 2
 DIFF_SCALING = 0.5
-
-clock = pygame.time.Clock()
 
 INFOKEY_WIDTH = 75
 INFOKEY_HEIGHT = int(INFOKEY_WIDTH / 1.776)
@@ -176,7 +173,7 @@ def gameOver(score):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_again_rect.collidepoint(event.pos):
                     game_over = False
-                    print("Hello")
+
             else:
                 pass
     return
@@ -244,20 +241,18 @@ while running:
                     start_game = False
                     running = False
                 if event.key == getattr(pygame, Cooking_pot.key):
-                    print("Cooking pot")
+
                     score += Cooking_pot.calculateScore()
                     Cooking_pot.interact(game_bg)
                 if event.key == getattr(pygame, Dishes.key):
-                    print("Dishes")
+
                     score += Dishes.calculateScore()
                     Dishes.interact(game_bg)
                 if event.key == getattr(pygame,Kettle.key):
-                    print("Kettle")
                     score += Kettle.calculateScore()
                     Kettle.resetSound(kettle_sound)
                     Kettle.interact(game_bg)
                 if event.key == getattr(pygame, Trashcan.key):
-                    print("Trashcan")
                     score += Trashcan.calculateScore()
                     Trashcan.interact(game_bg)
         #check if gameover criteria are met
@@ -269,6 +264,7 @@ while running:
         elif not pygame.mixer.music.get_busy() and not game_over:
             pygame.mixer.music.load("assets/bgmusic.mp3")
             pygame.mixer.music.play()
+
         print(Cooking_pot.progress, Dishes.progress, Kettle.progress, Trashcan.progress)
         pygame.display.update()
         clock.tick(FRAMERATE)
