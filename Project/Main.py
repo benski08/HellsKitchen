@@ -169,6 +169,7 @@ def gameOver(score):
             elif event.type == pygame.KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
+                    game_over = False
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if play_again_rect.collidepoint(event.pos):
