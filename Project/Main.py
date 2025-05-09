@@ -120,7 +120,6 @@ Cooking_pot = CooPot(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE
 #cooking pot button
 SIDELENGTH = 25
 CP_info_button_x, CP_info_button_y = Cooking_pot.pbarx - (SIDELENGTH//2),Cooking_pot.pbary + 12
-print(CP_info_button_y, CP_info_button_x)
 #initialize dishes
 Dishes = Dishes(0, "K_a", screen, key_list, used_list, info_font, FRAMERATE, interact_sound)
 
@@ -266,7 +265,6 @@ while running:
             pygame.mixer.music.load("assets/bgmusic.mp3")
             pygame.mixer.music.play()
 
-        print(Cooking_pot.progress, Dishes.progress, Kettle.progress, Trashcan.progress)
         pygame.display.update()
         clock.tick(FRAMERATE)
 
